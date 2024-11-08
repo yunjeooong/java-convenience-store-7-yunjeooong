@@ -1,7 +1,8 @@
 package store.domain.product;
 
 import store.domain.vo.Price;
-import store.domain.vo.Quantity;
+import store. domain.vo.Quantity;
+import store. domain.product.Stock;
 
 public class Product {
     private final String name;
@@ -25,23 +26,19 @@ public class Product {
         }
     }
 
-    public boolean canSupply(Quantity quantity) {
+    public boolean hasEnoughStock(Quantity quantity) {
         return stock.hasEnough(quantity);
     }
 
-    public void reduceStock(Quantity quantity) {
+    public void removeStock(Quantity quantity) {
         stock.decrease(quantity);
-    }
-
-    public boolean isAvailable() {
-        return !stock.isEmpty();
     }
 
     public Price calculateTotalPrice(Quantity quantity) {
         return price.multiply(quantity.value());
     }
 
-    public boolean isNamed(String targetName) {
-        return this.name.equals(targetName);
+    public String getName() {
+        return name;
     }
 }
