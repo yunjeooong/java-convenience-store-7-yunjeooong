@@ -12,4 +12,13 @@ public record Price(int value) {
             throw new IllegalArgumentException("[ERROR] 가격은 0원 이상이어야 합니다.");
         }
     }
+    public Price multiply(int quantity) {
+        return new Price(this.value * quantity);
+    }
+
+    public Price subtract(Price other) {
+        return new Price(this.value - other.value);
+    }
 }
+
+
