@@ -8,6 +8,7 @@ import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.product.PromotionProduct;
 import store.domain.promotion.PromotionType;
+import store.domain.product.Stock;
 import store.domain.vo.Price;
 import store.domain.vo.Quantity;
 import store.util.FileReader;
@@ -15,10 +16,12 @@ import store.util.FileReader;
 public class ProductRepository {
     private final Products products;
     private final FileReader fileReader;
+    private final Map<Product, Stock> stockMap;
 
     private ProductRepository(FileReader fileReader) {
         this.fileReader = fileReader;
         this.products = initializeProducts();
+        this.stockMap = initializeStockMap();
     }
 
     public static ProductRepository create(FileReader fileReader) {
@@ -106,6 +109,19 @@ public class ProductRepository {
                 type
         );
     }
+
+    private Map<Product, Stock> initializeStockMap() {
+        return products.getAllProducts().stream()
+                .collect(Collectors.toMap(
+                        product -> product,
+                        product -> new Stock(product.getStockQuantity()) // Stock의 초기 수량 설정
+                ));
+    }
+
+    public Optional<Stock> getStock(Product product) {
+        return Optional.ofNullable(stockMap.get(product));
+    }
+
 
     public Optional<Product> findByName(String name) {
         return products.findByName(name);

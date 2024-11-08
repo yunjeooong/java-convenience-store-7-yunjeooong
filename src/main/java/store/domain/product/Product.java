@@ -45,4 +45,8 @@ public class Product {
     public String getName() {
         return name;
     }
+
+    public Quantity getStockQuantity() {
+        return stock.getQuantity();
+    }
 }

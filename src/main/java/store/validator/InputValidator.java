@@ -1,4 +1,4 @@
-package validator;
+package store.validator;
 
 public class InputValidator {
 }

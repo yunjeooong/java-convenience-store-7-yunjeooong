@@ -8,15 +8,15 @@ import store.domain.vo.Quantity;
 
 public record ProductResponseDto(
         String name,
-        String price,
-        String stockStatus,
+        long price,
+        long stockStatus,
         String promotionName
 ) {
-    public static ProductResponseDto from(Product product, Stock stock) {
+    public static ProductResponseDto from(Product product, Quantity stockQuantity) {
         return new ProductResponseDto(
                 product.getName(),
-                formatPrice(product.calculateTotalPrice(new Quantity(1))),
-                formatStock(stock.getQuantity()),
+                product.calculateTotalPrice(new Quantity(1)).value(),
+                stockQuantity.value(),
                 getPromotionName(product)
         );
     }
