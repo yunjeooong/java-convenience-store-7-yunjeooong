@@ -18,7 +18,6 @@ public class AppConfig {
         return SingleTonHelper.INSTANCE;
     }
 
-    // 필요한 의존성들을 생성하는 메서드 추가
     public FileReader fileReader() {
         return FileReader.create();
     }
