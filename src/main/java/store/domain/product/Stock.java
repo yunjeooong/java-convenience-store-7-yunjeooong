@@ -10,7 +10,18 @@ public class Stock {
     }
 
     public boolean hasEnough(Quantity required) {
-        return quantity.value() >= required.value();
+        return !quantity.isLessThan(required);
+    }
+
+    public void decrease(Quantity amount) {
+        if (!hasEnough(amount)) {
+            throw new IllegalArgumentException("[ERROR] 재고가 부족합니다.");
+        }
+        this.quantity = this.quantity.subtract(amount);
+    }
+
+    public boolean isEmpty() {
+        return quantity.equals(Quantity.ZERO);
     }
 
     public Quantity getQuantity() {
