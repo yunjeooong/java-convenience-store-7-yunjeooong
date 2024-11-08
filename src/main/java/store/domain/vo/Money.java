@@ -1,6 +1,6 @@
 package store.domain.vo;
 
-public record Money() {
+public record Money(int value) {
     public static final Money ZERO = new Money(0);
 
     public Money {
