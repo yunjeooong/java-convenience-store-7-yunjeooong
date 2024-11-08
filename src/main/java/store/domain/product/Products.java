@@ -12,6 +12,11 @@ public class Products {
         this.products = products;
     }
 
+    public static Products from(List<Product> products) {
+        return new Products(products);
+    }
+
+
     public Optional<Product> findByName(String name) {
         return products.stream()
                 .filter(product -> product.getName().equals(name))

@@ -38,6 +38,10 @@ public class Product {
         return price.multiply(quantity.value());
     }
 
+    public boolean isPromotionProduct() {
+        return false;
+    }
+
     public String getName() {
         return name;
     }
