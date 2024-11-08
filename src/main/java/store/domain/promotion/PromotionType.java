@@ -1,5 +1,6 @@
 package store.domain.promotion;
 
+import camp.nextstep.edu.missionutils.DateTimes;
 import java.time.LocalDate;
 import java.util.Arrays;
 import store.domain.vo.Quantity;
@@ -49,7 +50,7 @@ public enum PromotionType {
     }
 
     private boolean isWithinPromotionPeriod() {
-        LocalDate now = LocalDate.now();
+        LocalDate now = DateTimes.now().toLocalDate();
         return !now.isBefore(startDate) && !now.isAfter(endDate);
     }
 
