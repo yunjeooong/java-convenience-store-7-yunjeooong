@@ -1,7 +1,5 @@
 package store.service;
 
-import store.domain.order.Order;
-import store.domain.vo.Money;
 import store.dto.response.OrderResponseDto;
 import store.util.ReceiptFormatter;
 import store.view.OutputView;

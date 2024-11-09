@@ -19,7 +19,7 @@ public class OrderFacade {
 
     public OrderResponseDto processOrder(Map<String, Quantity> items, boolean hasMembership) {
         Order order = orderService.createOrder(items, hasMembership);
-        discountManager.applyDiscount(order);  // 각 할인 정책별로 개별 적용
+        discountManager.applyDiscount(order);
         return OrderResponseDto.from(order);
     }
 }

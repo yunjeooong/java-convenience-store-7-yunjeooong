@@ -42,7 +42,6 @@ public class ProductService {
         return Products.from(products);
     }
 
-    // 이름으로 특정 상품을 조회
     public Product findProduct(String name) {
         return productRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException(
