@@ -15,10 +15,10 @@ public class ReceiptService {
 
     public void printReceipt(OrderResponseDto orderResponse) {
         String formattedReceipt = ReceiptFormatter.formatReceipt(
-                orderResponse.orderItems(),         // getOrderItems() -> orderItems()
-                orderResponse.totalAmount(),        // getTotalAmount() -> totalAmount()
-                orderResponse.promotionDiscount(),  // getDiscountAmount() -> promotionDiscount()
-                orderResponse.finalAmount()         // getFinalAmount() -> finalAmount()
+                orderResponse.orderItems(),
+                orderResponse.totalAmount(),
+                orderResponse.promotionDiscount(),
+                orderResponse.finalAmount()
         );
         outputView.printReceiptMessage(formattedReceipt);
     }

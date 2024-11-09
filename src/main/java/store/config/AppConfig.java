@@ -2,12 +2,16 @@ package store.config;
 
 import store.controller.MainController;
 import store.controller.OrderController;
+import store.domain.discount.DiscountManager;
 import store.repository.ProductRepository;
-import store.service.ProductService;
+import store.service.OrderFacade;
 import store.service.OrderService;
+import store.service.ProductService;
+import store.service.ReceiptService;
 import store.util.FileReader;
 import store.view.InputView;
 import store.view.OutputView;
+import java.util.Collections;
 
 public class AppConfig {
     private AppConfig() {}
@@ -44,4 +48,19 @@ public class AppConfig {
         return new MainController(inputView(), outputView(), productService());
     }
 
+    public OrderService orderService() {
+        return new OrderService(productRepository());
+    }
+
+    public ReceiptService receiptService() {
+        return new ReceiptService(outputView());
+    }
+
+    public OrderFacade orderFacade() {
+        return new OrderFacade(orderService(), DiscountManager.create(Collections.emptyList())); // 빈 리스트 사용
+    }
+
+    public OrderController orderController() {
+        return new OrderController(inputView(), orderFacade(), receiptService()); // OutputView 제거
+    }
 }

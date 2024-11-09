@@ -1,7 +1,6 @@
 package store.domain.discount;
 
 import store.domain.order.Order;
-import store.domain.vo.Money;
 import java.util.List;
 
 public class DiscountManager {
@@ -25,4 +24,6 @@ public class DiscountManager {
             }
         });
     }
+
+
 }
