@@ -1,4 +1,4 @@
-package store.domain.product;
+package store.domain.stock;
 
 import store.domain.vo.Quantity;
 

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.product.PromotionProduct;
-import store.domain.product.Stock;
+import store.domain.stock.Stock;
 import store.domain.promotion.PromotionType;
 import store.domain.vo.Price;
 import store.domain.vo.Quantity;

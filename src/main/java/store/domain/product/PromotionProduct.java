@@ -1,6 +1,7 @@
 package store.domain.product;
 
 import store.domain.promotion.PromotionType;
+import store.domain.stock.Stock;
 import store.domain.vo.Price;
 import store.domain.vo.Quantity;
 

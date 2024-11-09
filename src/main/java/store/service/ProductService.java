@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import store.domain.product.Product;
 import store.domain.product.Products;
-import store.domain.product.Stock;
+import store.domain.stock.Stock;
 import store.dto.response.ProductResponseDto;
 import store.repository.ProductRepository;
 

@@ -2,7 +2,7 @@ package store.domain.product;
 
 import store.domain.vo.Price;
 import store. domain.vo.Quantity;
-import store. domain.product.Stock;
+import store.domain.stock.Stock;
 
 public class Product {
     private final String name;

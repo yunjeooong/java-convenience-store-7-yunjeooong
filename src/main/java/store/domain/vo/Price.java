@@ -24,6 +24,9 @@ public record Price(int value) {
     public Price subtract(Price other) {
         return new Price(this.value - other.value);
     }
+    public Money toMoney() {
+        return new Money(this.value);
+    }
 }
 
 
