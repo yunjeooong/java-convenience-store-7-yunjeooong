@@ -1,5 +1,6 @@
 package store.dto.response;
 
+import java.util.stream.Collectors;
 import store.domain.order.Order;
 import store.domain.order.OrderLineItem;
 import store.domain.vo.Money;
@@ -15,13 +16,41 @@ public record OrderResponseDto(
 ) {
     public static OrderResponseDto from(Order order) {
         return new OrderResponseDto(
-                toOrderItemDtos(order.getOrderItems()),
-                toFreeItemDtos(order.getFreeItems()),
-                order.calculateTotalAmount(),
-                order.getPromotionDiscount(),
-                order.getMembershipDiscount(),
-                order.getFinalAmount()
+                createOrderItems(order),
+                createFreeItems(order),
+                calculateTotalAmount(order),
+                getPromotionDiscount(order),
+                getMembershipDiscount(order),
+                calculateFinalAmount(order)
         );
+    }
+
+    private static List<OrderItemDto> createOrderItems(Order order) {
+        return order.getOrderItems().stream()
+                .map(OrderItemDto::from)
+                .collect(Collectors.toList());
+    }
+
+    private static List<FreeItemDto> createFreeItems(Order order) {
+        return order.getFreeItems().stream()
+                .map(FreeItemDto::from)
+                .collect(Collectors.toList());
+    }
+
+    private static Money calculateTotalAmount(Order order) {
+        return order.calculateTotalAmount();
+    }
+
+    private static Money getPromotionDiscount(Order order) {
+        return order.getPromotionDiscount();
+    }
+
+    private static Money getMembershipDiscount(Order order) {
+        return order.getMembershipDiscount();
+    }
+
+    private static Money calculateFinalAmount(Order order) {
+        return order.getFinalAmount();
     }
 
     public record OrderItemDto(String name, int quantity, Money price) {

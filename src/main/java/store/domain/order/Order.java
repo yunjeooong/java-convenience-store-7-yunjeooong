@@ -50,6 +50,10 @@ public class Order {
                 .subtract(membershipDiscount);
     }
 
+    public Money calculateNonPromotionAmount() {
+        return calculateTotalAmount().subtract(promotionDiscount);
+    }
+
     public boolean hasMembership() {
         return hasMembership;
     }

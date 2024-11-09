@@ -5,13 +5,14 @@ import store.domain.vo.Money;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import store.dto.response.OrderResponseDto;
 
 public class ReceiptFormatter {
 
     private ReceiptFormatter() {
     }
 
-    public static String formatReceipt(List<OrderLineItem> orderItems, Money totalAmount, Money discountAmount, Money finalAmount) {
+    public static String formatReceipt(List<OrderResponseDto.OrderItemDto> orderItems, Money totalAmount, Money discountAmount, Money finalAmount) {
         StringBuilder receiptBuilder = new StringBuilder();
         receiptBuilder.append("==============W 편의점================\n");
 
@@ -28,7 +29,7 @@ public class ReceiptFormatter {
         return receiptBuilder.toString();
     }
 
-    private static String formatOrderLineItem(OrderLineItem item) {
-        return String.format("%s\t\t%d\t%,d원", item.productName(), item.productName(), item.quantityValue(), item.calculateItemPrice().value());
+    private static String formatOrderLineItem(OrderResponseDto.OrderItemDto item) {
+        return String.format("%s\t\t%d\t%,d원", item.name(), item.quantity(), item.price().value());
     }
 }

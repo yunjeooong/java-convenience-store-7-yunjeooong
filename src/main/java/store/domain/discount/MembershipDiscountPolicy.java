@@ -13,7 +13,7 @@ public class MembershipDiscountPolicy implements DiscountPolicy {
             return Money.ZERO;
         }
 
-        Money nonPromotionAmount = order.calculateTotalAmount().subtract(order.getDiscountAmount());
+        Money nonPromotionAmount = order.calculateNonPromotionAmount();
         Money membershipDiscount = new Money((int) (nonPromotionAmount.value() * DISCOUNT_RATE));
 
         if (membershipDiscount.value() > MAX_DISCOUNT) {

@@ -15,9 +15,14 @@ public class DiscountManager {
         return new DiscountManager(policies);
     }
 
-    public Money calculateTotalDiscount(Order order) {
-        return discountPolicies.stream()
-                .map(policy -> policy.calculateDiscount(order))
-                .reduce(Money.ZERO, Money::add);
+    public void applyDiscount(Order order) {
+        discountPolicies.forEach(policy -> {
+            if (policy instanceof PromotionDiscountPolicy) {
+                order.applyPromotionDiscount(policy.calculateDiscount(order));
+            }
+            if (policy instanceof MembershipDiscountPolicy) {
+                order.applyMembershipDiscount(policy.calculateDiscount(order));
+            }
+        });
     }
 }
