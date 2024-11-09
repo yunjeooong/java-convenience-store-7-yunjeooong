@@ -20,6 +20,10 @@ public class OutputView {
         System.out.println(ProductFormatter.formatProductInfo(product));
     }
 
+    public void printReceiptMessage(String receiptMessage) {
+        System.out.println(receiptMessage);
+    }
+
     public void printExceptionMessage(Exception exception) {
         System.out.println(exception.getMessage());
     }

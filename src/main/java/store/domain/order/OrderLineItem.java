@@ -45,4 +45,12 @@ public class OrderLineItem {
         }
         return ((PromotionProduct) product).calculateFreeItems(quantity);
     }
+    public String productName() {
+        return product.getName();
+    }
+
+    public int quantityValue() {
+        return quantity.value();
+    }
+
 }
