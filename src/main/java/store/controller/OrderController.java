@@ -7,33 +7,33 @@ import store.service.OrderFacade;
 import store.service.ReceiptService;
 import store.view.InputView;
 import store.view.OutputView;
+import store.view.ViewContainer;
 
 public class OrderController {
-    private final InputView inputView;
+    private final ViewContainer viewContainer;
     private final OrderFacade orderFacade;
     private final ReceiptService receiptService;
-    private final OutputView outputView;
 
     public OrderController(
-            InputView inputView,
+            ViewContainer viewContainer,
             OrderFacade orderFacade,
-            ReceiptService receiptService,
-            OutputView outputView) {
-        this.inputView = inputView;
+            ReceiptService receiptService) {
+        this.viewContainer = viewContainer;
         this.orderFacade = orderFacade;
         this.receiptService = receiptService;
-        this.outputView = outputView;
     }
 
     public void processOrder() {
         try {
-            Map<String, Quantity> items = inputView.readItems();
-            boolean hasMembership = inputView.readMembershipChoice();
+            OrderResponseDto orderResponse = viewContainer.getRetryTemplate().execute(() -> {
+                Map<String, Quantity> items = viewContainer.getInputView().readItems();
+                boolean hasMembership = viewContainer.getInputView().readMembershipChoice();
+                return orderFacade.processOrder(items, hasMembership);
+            });
 
-            OrderResponseDto orderResponse = orderFacade.processOrder(items, hasMembership);
             receiptService.printReceipt(orderResponse);
         } catch (IllegalArgumentException e) {
-            outputView.printExceptionMessage(e);
+            viewContainer.getOutputView().printExceptionMessage(e);
         }
     }
 }

@@ -12,6 +12,7 @@ import store.util.FileReader;
 import store.view.InputView;
 import store.view.OutputView;
 import java.util.Collections;
+import store.view.ViewContainer;
 
 public class AppConfig {
     private AppConfig() {}
@@ -34,6 +35,10 @@ public class AppConfig {
 
     public OutputView outputView() {
         return new OutputView();
+    }
+
+    public ViewContainer viewContainer() {
+        return new ViewContainer(inputView(), outputView());
     }
 
     public ProductRepository productRepository() {
@@ -61,6 +66,6 @@ public class AppConfig {
     }
 
     public OrderController orderController() {
-        return new OrderController(inputView(), orderFacade(), receiptService(),outputView());
+        return new OrderController(viewContainer(), orderFacade(), receiptService());
     }
 }
