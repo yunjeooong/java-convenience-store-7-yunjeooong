@@ -57,10 +57,10 @@ public class AppConfig {
     }
 
     public OrderFacade orderFacade() {
-        return new OrderFacade(orderService(), DiscountManager.create(Collections.emptyList())); // 빈 리스트 사용
+        return new OrderFacade(orderService(), DiscountManager.create(Collections.emptyList()));
     }
 
     public OrderController orderController() {
-        return new OrderController(inputView(), orderFacade(), receiptService()); // OutputView 제거
+        return new OrderController(inputView(), orderFacade(), receiptService(),outputView());
     }
 }

@@ -14,6 +14,7 @@ import store.service.ReceiptService;
 import store.view.InputView;
 import store.view.OutputView;
 
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,21 +22,28 @@ public class OrderController {
     private final InputView inputView;
     private final OrderFacade orderFacade;
     private final ReceiptService receiptService;
+    private final OutputView outputView;
 
     public OrderController(
             InputView inputView,
             OrderFacade orderFacade,
-            ReceiptService receiptService) {
+            ReceiptService receiptService,
+            OutputView outputView) {
         this.inputView = inputView;
         this.orderFacade = orderFacade;
         this.receiptService = receiptService;
+        this.outputView = outputView;
     }
 
     public void processOrder() {
-        Map<String, Quantity> items = inputView.readItems();
-        boolean hasMembership = inputView.readMembershipChoice();
+        try {
+            Map<String, Quantity> items = inputView.readItems();
+            boolean hasMembership = inputView.readMembershipChoice();
 
-        OrderResponseDto orderResponse = orderFacade.processOrder(items, hasMembership);
-        receiptService.printReceipt(orderResponse);
+            OrderResponseDto orderResponse = orderFacade.processOrder(items, hasMembership);
+            receiptService.printReceipt(orderResponse);
+        } catch (IllegalArgumentException e) {
+            outputView.printExceptionMessage(e);
+        }
     }
 }
