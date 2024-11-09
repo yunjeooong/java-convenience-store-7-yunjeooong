@@ -13,7 +13,5 @@ public class Application {
 
         mainController.start();
         orderController.processOrder();
-
-
     }
 }
