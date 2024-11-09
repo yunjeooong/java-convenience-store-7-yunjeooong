@@ -64,4 +64,9 @@ public enum PromotionType {
                 .findFirst()
                 .orElse(null);
     }
+
+    public int getRequiredQuantity() {
+        return this.buyQuantity;
+    }
+
 }

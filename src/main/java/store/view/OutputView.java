@@ -20,4 +20,9 @@ public class OutputView {
         System.out.println(ProductFormatter.formatProductInfo(product));
     }
 
+    public void printExceptionMessage(Exception exception) {
+        System.out.println(exception.getMessage());
+    }
+
+
 }

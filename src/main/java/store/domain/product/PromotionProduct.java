@@ -75,4 +75,33 @@ public class PromotionProduct extends Product {
     public String getPromotionName() {
         return promotionType.getName();
     }
+
+    // 프로모션 재고 부족 여부 확인
+    public boolean hasInsufficientPromotionStock(Quantity quantity) {
+        Quantity freeItems = promotionType.calculateFreeItems(quantity);
+        return !promotionStock.hasEnough(freeItems);
+    }
+
+    // 일반가로 구매해야 하는 수량 계산
+    public Quantity calculateNonPromotionQuantity(Quantity quantity) {
+        if (!hasInsufficientPromotionStock(quantity)) {
+            return Quantity.ZERO;
+        }
+
+        Quantity availablePromotionQuantity =
+                calculateAvailablePromotionQuantity(quantity);
+        return quantity.subtract(availablePromotionQuantity);
+    }
+
+    //  프로모션 적용 가능한 최대 수량 계산
+    public Quantity calculateAvailablePromotionQuantity(Quantity requestedQuantity) {
+        int maxPromotionSets = promotionStock.getQuantity().value() /
+                promotionType.getRequiredQuantity();
+        return new Quantity(maxPromotionSets * promotionType.getRequiredQuantity());
+    }
+
+    // PromotionType에도 추가 필요한 메서드
+    public int getRequiredQuantity() {
+        return promotionType.getRequiredQuantity();
+    }
 }
