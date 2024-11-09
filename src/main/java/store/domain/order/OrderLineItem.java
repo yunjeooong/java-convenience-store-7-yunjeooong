@@ -39,7 +39,7 @@ public class OrderLineItem {
         return hasPromotion() && calculateFreeQuantity().value() > 0;
     }
 
-    private Quantity calculateFreeQuantity() {
+    public Quantity calculateFreeQuantity() {
         if (!hasPromotion()) {
             return Quantity.ZERO;
         }

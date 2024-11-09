@@ -1,8 +1,10 @@
 package store.config;
 
 import store.controller.MainController;
+import store.controller.OrderController;
 import store.repository.ProductRepository;
 import store.service.ProductService;
+import store.service.OrderService;
 import store.util.FileReader;
 import store.view.InputView;
 import store.view.OutputView;
@@ -41,4 +43,5 @@ public class AppConfig {
     public MainController mainController() {
         return new MainController(inputView(), outputView(), productService());
     }
+
 }

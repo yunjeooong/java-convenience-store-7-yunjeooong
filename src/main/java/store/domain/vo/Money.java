@@ -24,6 +24,14 @@ public record Money(int value) {
         return new Money(this.value + other.value);
     }
 
+    public Money multiply(int multiplier) {
+        if (multiplier < 0) {
+            throw new IllegalArgumentException("[ERROR] 곱할 값은 0 이상이어야 합니다.");
+        }
+        return new Money(this.value * multiplier);
+    }
+
+
     public String format() {
         return String.format("%,d", value);
     }

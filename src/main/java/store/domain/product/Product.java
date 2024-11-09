@@ -9,7 +9,7 @@ public class Product {
     private final Price price;
     private final Stock stock;
 
-    protected Product(String name, Price price, Stock stock) {
+    public Product(String name, Price price, Stock stock) {
         validateName(name);
         this.name = name;
         this.price = price;

@@ -20,7 +20,7 @@ public class Order {
         return new Order(orderItems, hasMembership);
     }
 
-    private Money calculateTotalAmount() {
+    public Money calculateTotalAmount() {
         return orderItems.stream()
                 .map(OrderLineItem::calculateItemPrice)
                 .reduce(Money.ZERO, Money::add);
