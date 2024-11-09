@@ -3,30 +3,46 @@ package store.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import store.domain.product.Product;
+import store.domain.product.Products;
 import store.domain.product.Stock;
 import store.dto.response.ProductResponseDto;
 import store.repository.ProductRepository;
 
 public class ProductService {
     private final ProductRepository productRepository;
+
     private ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
+
     public static ProductService create(ProductRepository productRepository) {
         return new ProductService(productRepository);
     }
 
     public List<ProductResponseDto> getAllProducts() {
         return productRepository.findAll().stream()
-                .map(product -> {
-                    var stock = productRepository.getStock(product) // Product의 Stock 조회
-                            .orElseThrow(() -> new IllegalArgumentException(
-                                    String.format("[ERROR] %s의 재고 정보를 찾을 수 없습니다.", product.getName())));
-                    return ProductResponseDto.from(product, stock.getQuantity()); // Product와 Stock의 수량 전달
-                })
+                .map(this::toProductResponseDto)
                 .collect(Collectors.toList());
     }
 
+    private ProductResponseDto toProductResponseDto(Product product) {
+        var stock = getProductStock(product);
+        return ProductResponseDto.from(product, stock.getQuantity());
+    }
+
+
+    private Stock getProductStock(Product product) {
+        return productRepository.getStock(product)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("[ERROR] %s의 재고 정보를 찾을 수 없습니다.", product.getName())));
+    }
+
+    public Products getProducts() {
+        List<Product> products = productRepository.findAll();
+        return Products.from(products);
+    }
+
+    // 이름으로 특정 상품을 조회
     public Product findProduct(String name) {
         return productRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException(
