@@ -25,15 +25,18 @@ public class OrderController {
 
     public void processOrder() {
         try {
-            OrderResponseDto orderResponse = viewContainer.getRetryTemplate().execute(() -> {
-                Map<String, Quantity> items = viewContainer.getInputView().readItems();
-                boolean hasMembership = viewContainer.getInputView().readMembershipChoice();
-                return orderFacade.processOrder(items, hasMembership);
-            });
-
+            OrderResponseDto orderResponse = createOrder();
             receiptService.printReceipt(orderResponse);
         } catch (IllegalArgumentException e) {
             viewContainer.getOutputView().printExceptionMessage(e);
         }
+    }
+
+    private OrderResponseDto createOrder() {
+        return viewContainer.getRetryTemplate().execute(() -> {
+            Map<String, Quantity> items = viewContainer.getInputView().readItems();
+            boolean hasMembership = viewContainer.getInputView().readMembershipChoice();
+            return orderFacade.processOrder(items, hasMembership);
+        });
     }
 }
