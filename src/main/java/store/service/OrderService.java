@@ -3,7 +3,7 @@ package store.service;
 import java.util.Map;
 import store.domain.order.Order;
 import store.domain.order.OrderLineItem;
-import store.domain.product.RegularProduct;
+import store.domain.product.Product;
 import store.domain.vo.Quantity;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ public class OrderService {
 
     private void validateItems(Map<String, Quantity> items) {
         items.forEach((name, quantity) -> {
-            RegularProduct product = findProduct(name);
+            Product product = findProduct(name);
             if (!product.hasEnoughStock(quantity)) {
                 throw new IllegalArgumentException("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
             }
@@ -40,7 +40,7 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    private RegularProduct findProduct(String name) {
+    private Product findProduct(String name) {
         return productRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("[ERROR] 존재하지 않는 상품입니다: %s", name)));

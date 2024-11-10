@@ -26,14 +26,13 @@ public class ProductService {
     }
 
     private ProductResponseDto toProductResponseDto(Product product) {
-        var stock = getProductStock(product);
+        Stock stock = getProductStock(product);
         return ProductResponseDto.from(product, stock.getQuantity());
     }
 
     private Stock getProductStock(Product product) {
-        return productRepository.getStock(product)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        String.format("[ERROR] %s의 재고 정보를 찾을 수 없습니다.", product.getName())));
+        return product.getStocks()
+                .getStock(product.isPromotionProduct());
     }
 
     public Products getProducts() {

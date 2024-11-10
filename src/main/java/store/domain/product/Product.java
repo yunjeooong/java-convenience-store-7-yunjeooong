@@ -23,11 +23,14 @@ public abstract class Product {
     }
 
     public boolean hasEnoughStock(Quantity quantity) {
-        return stocks.canFulfillOrder(quantity);
+        if (isPromotionProduct()) {
+            return stocks.hasEnoughPromotionStock(quantity);
+        }
+        return stocks.hasEnoughRegularStock(quantity);
     }
 
     public void removeStock(Quantity quantity) {
-        stocks.decrease(quantity);
+        stocks.decrease(quantity, isPromotionProduct());
     }
 
     public Price calculateTotalPrice(Quantity quantity) {
@@ -36,6 +39,10 @@ public abstract class Product {
 
     public String getName() {
         return name;
+    }
+
+    public Stocks getStocks() {
+        return stocks;
     }
 
     public abstract boolean isPromotionProduct();
