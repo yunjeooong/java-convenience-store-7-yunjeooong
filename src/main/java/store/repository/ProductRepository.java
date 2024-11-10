@@ -2,18 +2,20 @@ package store.repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import store.domain.product.RegularProduct;
+import store.domain.product.Product;
 import store.domain.product.Products;
+import store.domain.product.RegularProduct;
 import store.domain.product.PromotionProduct;
 import store.domain.promotion.PromotionType;
-import store.domain.vo.Price;
 import store.domain.vo.Quantity;
 import store.util.FileReader;
+import store.util.PromotionUtils;
+import store.util.ProductInfoParser;
+import store.util.ProductInfoParser.ProductInfo;
 
 public class ProductRepository {
     private final Products products;
@@ -29,41 +31,19 @@ public class ProductRepository {
     }
 
     private Products initializeProducts() {
-        List<Product> allProducts = createAllProducts();
+        Map<String, PromotionType> promotions = PromotionUtils.loadPromotions(fileReader);
+        List<Product> allProducts = createAllProducts(promotions);
         return Products.from(allProducts);
     }
 
-    private List<Product> createAllProducts() {
-        Map<String, PromotionType> promotions = loadPromotions();
-        return createProductVersions(promotions);
-    }
-
-    private Map<String, PromotionType> loadPromotions() {
-        return fileReader.readPromotions().stream()
-                .map(this::parsePromotion)
-                .collect(Collectors.toMap(PromotionEntry::name, PromotionEntry::type));
-    }
-
-    private PromotionEntry parsePromotion(String line) {
-        String[] parts = line.split(",");
-        validatePromotionParts(parts);
-        return new PromotionEntry(parts[0].trim(), PromotionType.from(parts[0].trim()));
-    }
-
-    private void validatePromotionParts(String[] parts) {
-        if (parts.length != 5) {
-            throw new IllegalArgumentException("[ERROR] 프로모션 데이터 형식이 올바르지 않습니다.");
-        }
-    }
-
-    private List<Product> createProductVersions(Map<String, PromotionType> promotions) {
+    private List<Product> createAllProducts(Map<String, PromotionType> promotions) {
         Map<String, List<ProductInfo>> groupedProducts = readGroupedProducts();
         return createAllVersions(groupedProducts, promotions);
     }
 
     private Map<String, List<ProductInfo>> readGroupedProducts() {
         return fileReader.readProducts().stream()
-                .map(this::parseProductInfo)
+                .map(ProductInfoParser::parseProductInfo)
                 .collect(Collectors.groupingBy(ProductInfo::name));
     }
 
@@ -106,27 +86,6 @@ public class ProductRepository {
         return new ProductInfo(reference.name(), reference.price(), new Quantity(0), "null");
     }
 
-    private ProductInfo parseProductInfo(String line) {
-        String[] parts = line.split(",");
-        validateProductParts(parts);
-        return createProductInfo(parts);
-    }
-
-    private void validateProductParts(String[] parts) {
-        if (parts.length != 4) {
-            throw new IllegalArgumentException("[ERROR] 상품 데이터 형식이 올바르지 않습니다.");
-        }
-    }
-
-    private ProductInfo createProductInfo(String[] parts) {
-        return new ProductInfo(
-                parts[0].trim(),
-                new Price(Integer.parseInt(parts[1].trim())),
-                new Quantity(Integer.parseInt(parts[2].trim())),
-                parts[3].trim()
-        );
-    }
-
     private Product createPromotionProduct(ProductInfo info, Map<String, PromotionType> promotions) {
         PromotionType type = promotions.get(info.promotionName());
         return PromotionProduct.create(
@@ -153,14 +112,5 @@ public class ProductRepository {
 
     public List<Product> findAll() {
         return products.getAllProducts();
-    }
-
-    private record ProductInfo(String name, Price price, Quantity quantity, String promotionName) {
-        public boolean hasPromotion() {
-            return !"null".equals(promotionName);
-        }
-    }
-
-    private record PromotionEntry(String name, PromotionType type) {
     }
 }
