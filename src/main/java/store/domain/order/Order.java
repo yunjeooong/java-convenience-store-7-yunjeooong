@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import store.domain.vo.Money;
 import java.util.List;
+import store.domain.vo.Quantity;
 
 public class Order {
     private final List<OrderLineItem> orderItems;
@@ -53,9 +54,16 @@ public class Order {
     public Money calculateNonPromotionAmount() {
         return calculateTotalAmount().subtract(promotionDiscount);
     }
+
     public Money calculatePromotionDiscount() {
         return getFreeItems().stream()
-                .map(OrderLineItem::calculateItemPrice)
+                .map(item -> {
+                    Money singleItemPrice = new Money(
+                            item.getProduct().calculateTotalPrice(new Quantity(1)).value()
+                    );
+                    // 증정 상품 1개당 가격만 할인
+                    return singleItemPrice;
+                })
                 .reduce(Money.ZERO, Money::add);
     }
 

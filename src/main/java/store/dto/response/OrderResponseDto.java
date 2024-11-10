@@ -66,7 +66,7 @@ public record OrderResponseDto(
         public static FreeItemDto from(OrderLineItem item) {
             return new FreeItemDto(
                     item.productName(),
-                    item.calculateFreeQuantity().value()
+                    item.getQuantity().value()
             );
         }
     }

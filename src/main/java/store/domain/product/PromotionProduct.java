@@ -24,6 +24,12 @@ public class PromotionProduct extends Product {
         );
     }
 
+    public boolean isOnePlusOnePromotion() {
+        return promotionType == PromotionType.MD_RECOMMENDED ||
+                promotionType == PromotionType.FLASH_SALE;
+    }
+
+
     @Override
     public boolean isPromotionProduct() {
         return true;

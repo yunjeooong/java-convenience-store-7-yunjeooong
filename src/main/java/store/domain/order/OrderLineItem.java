@@ -9,20 +9,14 @@ import store.domain.vo.Quantity;
 public class OrderLineItem {
     private final Product product;
     private final Quantity quantity;
-    private final Price price;
 
     private OrderLineItem(Product product, Quantity quantity) {
         this.product = product;
         this.quantity = quantity;
-        this.price = calculatePrice(product, quantity);
     }
 
     public static OrderLineItem create(Product product, Quantity quantity) {
         return new OrderLineItem(product, quantity);
-    }
-
-    private Price calculatePrice(Product product, Quantity quantity) {
-        return product.calculateTotalPrice(quantity);
     }
 
     public void removeStock() {
@@ -37,8 +31,9 @@ public class OrderLineItem {
         return quantity.value();
     }
 
+    // 수정된 부분: 실제 구매 수량만으로 금액 계산
     public Money calculateItemPrice() {
-        return price.toMoney();
+        return new Money(product.calculateTotalPrice(quantity).value());
     }
 
     public boolean hasPromotion() {
@@ -54,14 +49,14 @@ public class OrderLineItem {
 
     public OrderLineItem createFreeItemLine() {
         Quantity freeQuantity = calculateFreeQuantity();
-        if (freeQuantity.value() > 0) {
-            return OrderLineItem.create(product, freeQuantity);
+        if (freeQuantity.value() == 0) {
+            return null;
         }
-        return null;
+        return OrderLineItem.create(product, freeQuantity);
     }
 
     public Price getPrice() {
-        return price;
+        return new Price(calculateItemPrice().value());
     }
 
     public Product getProduct() {

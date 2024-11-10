@@ -59,7 +59,7 @@ public enum PromotionType {
             return 0;
         }
         if (this == MD_RECOMMENDED || this == FLASH_SALE) {
-            return quantity.value() / 2;
+            return quantity.value();
         }
         return (quantity.value() / this.buyQuantity) * this.freeQuantity;
     }
