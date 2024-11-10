@@ -11,8 +11,8 @@ import store.service.ReceiptService;
 import store.util.FileReader;
 import store.view.InputView;
 import store.view.OutputView;
-import java.util.Collections;
 import store.view.ViewContainer;
+import java.util.Collections;
 
 public class AppConfig {
     private AppConfig() {}
@@ -69,7 +69,8 @@ public class AppConfig {
         return new OrderController(
                 viewContainer(),
                 orderFacade(),
-                productService()  // ProductService 추가
+                productService(),
+                receiptService()
         );
     }
 }

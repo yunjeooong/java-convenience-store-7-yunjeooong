@@ -9,20 +9,23 @@ import store.dto.request.OrderRequestDto;
 import store.dto.response.OrderResponseDto;
 import store.service.OrderFacade;
 import store.service.ProductService;
-import store.util.ReceiptFormatter;
+import store.service.ReceiptService;
 import store.view.ViewContainer;
 
 public class OrderController {
     private final ViewContainer viewContainer;
     private final OrderFacade orderFacade;
     private final ProductService productService;
+    private final ReceiptService receiptService;
 
     public OrderController(ViewContainer viewContainer,
                            OrderFacade orderFacade,
-                           ProductService productService) {
+                           ProductService productService,
+                           ReceiptService receiptService) {
         this.viewContainer = viewContainer;
         this.orderFacade = orderFacade;
         this.productService = productService;
+        this.receiptService = receiptService;
     }
 
     public void processOrder() {
@@ -38,7 +41,7 @@ public class OrderController {
             boolean hasMembership = viewContainer.getInputView().readMembershipChoice();
 
             OrderResponseDto orderResponse = orderFacade.processOrder(finalRequests, hasMembership);
-            printReceipt(orderResponse);
+            receiptService.printReceipt(orderResponse);
         });
     }
 
@@ -94,19 +97,6 @@ public class OrderController {
         return new OrderRequestDto(
                 request.productName(),
                 request.quantity().add(freeQuantity)
-        );
-    }
-
-    private void printReceipt(OrderResponseDto orderResponse) {
-        viewContainer.getOutputView().printReceiptMessage(
-                ReceiptFormatter.formatReceipt(
-                        orderResponse.orderItems(),
-                        orderResponse.freeItems(),
-                        orderResponse.totalAmount(),
-                        orderResponse.promotionDiscount(),
-                        orderResponse.membershipDiscount(),
-                        orderResponse.finalAmount()
-                )
         );
     }
 
