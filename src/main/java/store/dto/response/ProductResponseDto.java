@@ -1,6 +1,6 @@
 package store.dto.response;
 
-import store.domain.product.RegularProduct;
+import store.domain.product.Product;
 import store.domain.product.PromotionProduct;
 import store.domain.vo.Price;
 import store.domain.vo.Quantity;
@@ -11,7 +11,7 @@ public record ProductResponseDto(
         long stockStatus,
         String promotionName
 ) {
-    public static ProductResponseDto from(RegularProduct product, Quantity stockQuantity) {
+    public static ProductResponseDto from(Product product, Quantity stockQuantity) {
         return new ProductResponseDto(
                 product.getName(),
                 product.calculateTotalPrice(new Quantity(1)).value(),
@@ -31,10 +31,10 @@ public record ProductResponseDto(
         return quantity.value() + "개";
     }
 
-    private static String getPromotionName(RegularProduct product) {
-        if (!product.isPromotionProduct()) {
-            return "";
+    private static String getPromotionName(Product product) {
+        if (product instanceof PromotionProduct promotionProduct) {
+            return promotionProduct.getPromotionName();
         }
-        return ((PromotionProduct) product).getPromotionName();
+        return "";
     }
 }
