@@ -1,3 +1,4 @@
+
 package store.view;
 
 import java.util.List;
@@ -27,4 +28,6 @@ public class OutputView {
     public void printExceptionMessage(Exception exception) {
         System.out.println(exception.getMessage());
     }
+
+
 }

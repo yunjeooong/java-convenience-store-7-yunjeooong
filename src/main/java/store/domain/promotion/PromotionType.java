@@ -43,15 +43,15 @@ public enum PromotionType {
         return name;
     }
 
-    public boolean isApplicable(Quantity quantity) {
-        return isWithinPromotionPeriod() &&
-                quantity.value() >= this.buyQuantity;
-    }
 
     private boolean isWithinPromotionPeriod() {
         LocalDateTime currentDateTime = DateTimes.now();
         LocalDate currentDate = currentDateTime.toLocalDate();
         return !currentDate.isBefore(startDate) && !currentDate.isAfter(endDate);
+    }
+    public boolean isApplicable(Quantity quantity) {
+        return isWithinPromotionPeriod() &&
+                quantity.value() >= this.buyQuantity;
     }
 
     public int calculateFreeItems(Quantity quantity) {
@@ -60,4 +60,6 @@ public enum PromotionType {
         }
         return (quantity.value() / this.buyQuantity) * this.freeQuantity;
     }
+
+
 }

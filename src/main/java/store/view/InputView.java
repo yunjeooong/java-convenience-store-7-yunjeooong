@@ -74,4 +74,7 @@ public class InputView {
                 nonPromotionQuantity);
         return readYesNo();
     }
+
+
+
 }

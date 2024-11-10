@@ -84,9 +84,13 @@ public class OrderController {
         return createRequestWithFreeItems(request, freeQuantity);
     }
 
-    private Quantity calculateFreeItems(PromotionProduct product, Quantity quantity) {
+   /* private Quantity calculateFreeItems(PromotionProduct product, Quantity quantity) {
         return product.calculateFreeItems(quantity);
+    }*/
+    private Quantity calculateFreeItems(PromotionProduct product, Quantity quantity) {
+        return new Quantity(product.calculateFreeItems(quantity).value());
     }
+
 
     private boolean shouldAddFreeItems(String productName, Quantity freeQuantity) {
         return viewContainer.getInputView().readPromotionSuggestion(productName, freeQuantity);

@@ -53,6 +53,11 @@ public class Order {
     public Money calculateNonPromotionAmount() {
         return calculateTotalAmount().subtract(promotionDiscount);
     }
+    public Money calculatePromotionDiscount() {
+        return getFreeItems().stream()
+                .map(OrderLineItem::calculateItemPrice)
+                .reduce(Money.ZERO, Money::add);
+    }
 
     public boolean hasMembership() {
         return hasMembership;

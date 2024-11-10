@@ -2,8 +2,6 @@ package store.controller;
 
 import java.util.List;
 import store.dto.response.ProductResponseDto;
-import store.view.InputView;
-import store.view.OutputView;
 import store.service.ProductService;
 import store.view.ViewContainer;
 

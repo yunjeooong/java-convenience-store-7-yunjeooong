@@ -15,13 +15,14 @@ public record OrderResponseDto(
         Money finalAmount
 ) {
     public static OrderResponseDto from(Order order) {
+        Money promotionDiscount = order.calculatePromotionDiscount();
         return new OrderResponseDto(
                 createOrderItems(order),
                 createFreeItems(order),
                 calculateTotalAmount(order),
-                getPromotionDiscount(order),
+                promotionDiscount,
                 getMembershipDiscount(order),
-                calculateFinalAmount(order)
+                calculateFinalAmount(order, promotionDiscount)
         );
     }
 
@@ -41,16 +42,14 @@ public record OrderResponseDto(
         return order.calculateTotalAmount();
     }
 
-    private static Money getPromotionDiscount(Order order) {
-        return order.getPromotionDiscount();
-    }
-
     private static Money getMembershipDiscount(Order order) {
         return order.getMembershipDiscount();
     }
 
-    private static Money calculateFinalAmount(Order order) {
-        return order.getFinalAmount();
+    private static Money calculateFinalAmount(Order order, Money promotionDiscount) {
+        return order.calculateTotalAmount()
+                .subtract(promotionDiscount)
+                .subtract(order.getMembershipDiscount());
     }
 
     public record OrderItemDto(String name, int quantity, Money price) {
