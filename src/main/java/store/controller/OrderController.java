@@ -81,7 +81,6 @@ public class OrderController {
         return createRequestWithFreeItems(request, freeQuantity);
     }
 
-    // calculateFreeQuantity에서 calculateFreeItems로 메서드명 변경
     private Quantity calculateFreeItems(PromotionProduct product, Quantity quantity) {
         return product.calculateFreeItems(quantity);
     }
@@ -102,8 +101,10 @@ public class OrderController {
         viewContainer.getOutputView().printReceiptMessage(
                 ReceiptFormatter.formatReceipt(
                         orderResponse.orderItems(),
+                        orderResponse.freeItems(),
                         orderResponse.totalAmount(),
                         orderResponse.promotionDiscount(),
+                        orderResponse.membershipDiscount(),
                         orderResponse.finalAmount()
                 )
         );

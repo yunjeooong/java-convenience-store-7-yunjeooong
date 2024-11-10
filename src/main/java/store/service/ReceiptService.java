@@ -14,8 +14,10 @@ public class ReceiptService {
     public void printReceipt(OrderResponseDto orderResponse) {
         String formattedReceipt = ReceiptFormatter.formatReceipt(
                 orderResponse.orderItems(),
+                orderResponse.freeItems(),
                 orderResponse.totalAmount(),
                 orderResponse.promotionDiscount(),
+                orderResponse.membershipDiscount(),
                 orderResponse.finalAmount()
         );
         outputView.printReceiptMessage(formattedReceipt);
