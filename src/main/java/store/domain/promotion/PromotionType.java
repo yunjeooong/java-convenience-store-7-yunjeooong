@@ -1,6 +1,7 @@
 package store.domain.promotion;
 
 import camp.nextstep.edu.missionutils.DateTimes;
+import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.Arrays;
 import store.domain.vo.Quantity;
@@ -9,7 +10,7 @@ public enum PromotionType {
     CARBONATED_DRINKS_TWO_PLUS_ONE("탄산2+1", 2, 1,
             LocalDate.of(2024, 1, 1),
             LocalDate.of(2024, 12, 31)),
-    MD_RECOMMEND("MD추천상품", 1, 1,
+    MD_RECOMMENDED("MD추천상품", 1, 1,
             LocalDate.of(2024, 1, 1),
             LocalDate.of(2024, 12, 31)),
     FLASH_SALE("반짝할인", 1, 1,
@@ -31,42 +32,32 @@ public enum PromotionType {
         this.endDate = endDate;
     }
 
-    public boolean isApplicable(Quantity quantity) {
-        return quantity.value() >= buyQuantity && isWithinPromotionPeriod();
-    }
-
-    public Quantity calculateFreeItems(Quantity purchaseQuantity) {
-        if (!isApplicable(purchaseQuantity)) {
-            return Quantity.ZERO;
-        }
-        return new Quantity((purchaseQuantity.value() / buyQuantity) * freeQuantity);
-    }
-
-    public Quantity calculateRequiredQuantity(Quantity currentQuantity) {
-        if (isApplicable(currentQuantity)) {
-            return Quantity.ZERO;
-        }
-        return new Quantity(buyQuantity - currentQuantity.value());
-    }
-
-    private boolean isWithinPromotionPeriod() {
-        LocalDate now = DateTimes.now().toLocalDate();
-        return !now.isBefore(startDate) && !now.isAfter(endDate);
+    public static PromotionType from(String name) {
+        return Arrays.stream(values())
+                .filter(type -> type.name.equals(name))
+                .findFirst()
+                .orElse(null);
     }
 
     public String getName() {
         return name;
     }
 
-    public static PromotionType from(String name) {
-        return Arrays.stream(values())
-                .filter(promotion -> promotion.name.equals(name))
-                .findFirst()
-                .orElse(null);
+    public boolean isApplicable(Quantity quantity) {
+        return isWithinPromotionPeriod() &&
+                quantity.value() >= this.buyQuantity;
     }
 
-    public int getRequiredQuantity() {
-        return this.buyQuantity;
+    private boolean isWithinPromotionPeriod() {
+        LocalDateTime currentDateTime = DateTimes.now();
+        LocalDate currentDate = currentDateTime.toLocalDate();
+        return !currentDate.isBefore(startDate) && !currentDate.isAfter(endDate);
     }
 
+    public int calculateFreeItems(Quantity quantity) {
+        if (!isApplicable(quantity)) {
+            return 0;
+        }
+        return (quantity.value() / this.buyQuantity) * this.freeQuantity;
+    }
 }

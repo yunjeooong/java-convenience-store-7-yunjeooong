@@ -3,6 +3,10 @@ package store.domain.product;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import store.domain.stock.PromotionStock;
+import store.domain.stock.RegularStock;
+import store.domain.stock.Stocks;
+import store.domain.vo.Quantity;
 
 public class Products {
     private final List<Product> products;
@@ -13,6 +17,13 @@ public class Products {
 
     public static Products from(List<Product> products) {
         return new Products(products);
+    }
+
+    public static Stocks of(Quantity regularQuantity, Quantity promotionQuantity) {
+        return new Stocks(
+                new RegularStock(regularQuantity),
+                new PromotionStock(promotionQuantity)
+        );
     }
 
     public Optional<Product> findByName(String name) {

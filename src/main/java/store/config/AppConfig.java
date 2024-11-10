@@ -50,7 +50,7 @@ public class AppConfig {
     }
 
     public MainController mainController() {
-        return new MainController(inputView(), outputView(), productService());
+        return new MainController(viewContainer(), productService());
     }
 
     public OrderService orderService() {
@@ -66,6 +66,10 @@ public class AppConfig {
     }
 
     public OrderController orderController() {
-        return new OrderController(viewContainer(), orderFacade(), receiptService());
+        return new OrderController(
+                viewContainer(),
+                orderFacade(),
+                productService()  // ProductService 추가
+        );
     }
 }

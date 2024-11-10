@@ -6,7 +6,7 @@ public class Stocks {
     private final Stock regularStock;
     private final Stock promotionStock;
 
-    private Stocks(Stock regularStock, Stock promotionStock) {
+    public Stocks(Stock regularStock, Stock promotionStock) {
         this.regularStock = regularStock;
         this.promotionStock = promotionStock;
     }
