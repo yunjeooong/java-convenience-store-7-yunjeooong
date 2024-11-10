@@ -46,7 +46,11 @@ public class PromotionProduct extends Product {
         }
         return new Quantity(promotionType.calculateFreeItems(orderQuantity));
     }
+
     public void addPromotionInfoToResponse(ProductResponseDto.Builder builder) {
         builder.withPromotionName(promotionType.getName());
+    }
+    public String promotionName() {  // getter 형식을 피하고 행위를 표현
+        return promotionType.getName();
     }
 }

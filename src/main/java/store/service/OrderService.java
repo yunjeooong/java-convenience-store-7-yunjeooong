@@ -18,10 +18,16 @@ public class OrderService {
     }
 
     public Order createOrder(Map<String, Quantity> items, boolean hasMembership) {
-        validateItems(items);
-        List<OrderLineItem> orderItems = createOrderItems(items);
-        updateStocks(orderItems);
-        return Order.create(orderItems, hasMembership);
+        Order order = Order.create();
+        for (Map.Entry<String, Quantity> entry : items.entrySet()) {
+            Product product = findProduct(entry.getKey());
+            order.addLineItem(product, entry.getValue());
+        }
+
+        order.removeStocks();
+        productRepository.saveCurrentState();
+
+        return order;
     }
 
     private void validateItems(Map<String, Quantity> items) {
@@ -55,7 +61,6 @@ public class OrderService {
         if (!product.isPromotionProduct()) {
             return quantity;
         }
-        // 프로모션 수량을 추가하지 않고, 실제 구매한 수량만 반환
         return quantity;
     }
 

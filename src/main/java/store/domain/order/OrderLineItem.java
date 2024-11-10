@@ -31,7 +31,6 @@ public class OrderLineItem {
         return quantity.value();
     }
 
-    // 수정된 부분: 실제 구매 수량만으로 금액 계산
     public Money calculateItemPrice() {
         return new Money(product.calculateTotalPrice(quantity).value());
     }

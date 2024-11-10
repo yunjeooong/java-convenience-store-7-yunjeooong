@@ -1,8 +1,10 @@
 package store.domain.order;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import store.domain.product.Product;
 import store.domain.vo.Money;
 import java.util.List;
 import store.domain.vo.Quantity;
@@ -45,11 +47,6 @@ public class Order {
         this.membershipDiscount = discount;
     }
 
-    public Money getFinalAmount() {
-        return calculateTotalAmount()
-                .subtract(promotionDiscount)
-                .subtract(membershipDiscount);
-    }
 
     public Money calculateNonPromotionAmount() {
         return calculateTotalAmount().subtract(promotionDiscount);
@@ -61,7 +58,6 @@ public class Order {
                     Money singleItemPrice = new Money(
                             item.getProduct().calculateTotalPrice(new Quantity(1)).value()
                     );
-                    // 증정 상품 1개당 가격만 할인
                     return singleItemPrice;
                 })
                 .reduce(Money.ZERO, Money::add);
@@ -74,6 +70,9 @@ public class Order {
     public List<OrderLineItem> getOrderItems() {
         return Collections.unmodifiableList(orderItems);
     }
+    public void removeStocks() {
+        orderItems.forEach(OrderLineItem::removeStock);
+    }
 
     public Money getPromotionDiscount() {
         return promotionDiscount;
@@ -81,5 +80,12 @@ public class Order {
 
     public Money getMembershipDiscount() {
         return membershipDiscount;
+    }
+    public void addLineItem(Product product, Quantity quantity) {
+        orderItems.add(OrderLineItem.create(product, quantity));
+    }
+
+    public static Order create() {  // 추가된 메서드
+        return new Order(new ArrayList<>(), false);
     }
 }

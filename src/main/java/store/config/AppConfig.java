@@ -3,12 +3,13 @@ package store.config;
 import store.controller.MainController;
 import store.controller.OrderController;
 import store.domain.discount.DiscountManager;
+import store.infrastructure.StockFileManager;
 import store.repository.ProductRepository;
 import store.service.OrderFacade;
 import store.service.OrderService;
 import store.service.ProductService;
 import store.service.ReceiptService;
-import store.util.FileReader;
+import store.infrastructure.FileReader;
 import store.view.InputView;
 import store.view.OutputView;
 import store.view.ViewContainer;
@@ -25,8 +26,12 @@ public class AppConfig {
         return SingleTonHelper.INSTANCE;
     }
 
+    public StockFileManager stockFileManager() {
+        return new StockFileManager();
+    }
+
     public FileReader fileReader() {
-        return FileReader.create();
+        return FileReader.create(stockFileManager());
     }
 
     public InputView inputView() {
@@ -42,7 +47,7 @@ public class AppConfig {
     }
 
     public ProductRepository productRepository() {
-        return ProductRepository.create(fileReader());
+        return ProductRepository.create(fileReader(), stockFileManager());
     }
 
     public ProductService productService() {
@@ -62,7 +67,11 @@ public class AppConfig {
     }
 
     public OrderFacade orderFacade() {
-        return new OrderFacade(orderService(), DiscountManager.create(Collections.emptyList()));
+        return new OrderFacade(
+                orderService(),
+                DiscountManager.create(Collections.emptyList()),
+                productRepository()
+        );
     }
 
     public OrderController orderController() {

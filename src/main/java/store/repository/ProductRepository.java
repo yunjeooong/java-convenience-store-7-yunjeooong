@@ -12,7 +12,8 @@ import store.domain.product.RegularProduct;
 import store.domain.product.PromotionProduct;
 import store.domain.promotion.PromotionType;
 import store.domain.vo.Quantity;
-import store.util.FileReader;
+import store.infrastructure.FileReader;
+import store.infrastructure.StockFileManager;
 import store.util.PromotionUtils;
 import store.util.ProductInfoParser;
 import store.util.ProductInfoParser.ProductInfo;
@@ -20,14 +21,16 @@ import store.util.ProductInfoParser.ProductInfo;
 public class ProductRepository {
     private final Products products;
     private final FileReader fileReader;
+    private final StockFileManager stockFileManager;
 
-    private ProductRepository(FileReader fileReader) {
+    private ProductRepository(FileReader fileReader, StockFileManager stockFileManager) {
         this.fileReader = fileReader;
+        this.stockFileManager = stockFileManager;
         this.products = initializeProducts();
     }
 
-    public static ProductRepository create(FileReader fileReader) {
-        return new ProductRepository(fileReader);
+    public static ProductRepository create(FileReader fileReader, StockFileManager stockFileManager) {
+        return new ProductRepository(fileReader, stockFileManager);
     }
 
     private Products initializeProducts() {
@@ -112,5 +115,9 @@ public class ProductRepository {
 
     public List<Product> findAll() {
         return products.getAllProducts();
+    }
+
+    public void saveCurrentState() {
+        stockFileManager.saveStockState(findAll());
     }
 }

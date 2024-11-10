@@ -4,8 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import store.domain.promotion.PromotionType;
+import store.infrastructure.FileReader;
 
 public class PromotionUtils {
+
+    private PromotionUtils() {
+    }
 
     public static Map<String, PromotionType> loadPromotions(FileReader fileReader) {
         return fileReader.readPromotions().stream()
@@ -14,13 +18,14 @@ public class PromotionUtils {
     }
 
     private static PromotionEntry parsePromotion(String line) {
-        List<String> parts = List.of(line.split(","));
+        String[] parts = line.split(",");
         validatePromotionParts(parts);
-        return new PromotionEntry(parts.get(0).trim(), PromotionType.from(parts.get(0).trim()));
+        String name = parts[0].trim();
+        return new PromotionEntry(name, PromotionType.from(name));
     }
 
-    private static void validatePromotionParts(List<String> parts) {
-        if (parts.size() != 5) {
+    private static void validatePromotionParts(String[] parts) {
+        if (parts.length != 5) {
             throw new IllegalArgumentException("[ERROR] 프로모션 데이터 형식이 올바르지 않습니다.");
         }
     }
