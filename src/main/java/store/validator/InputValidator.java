@@ -94,7 +94,6 @@ public class InputValidator {
         }
     }
 
-    // 검증 결과를 담을 레코드
     public record PurchaseItem(String productName, Quantity quantity) {
     }
 }

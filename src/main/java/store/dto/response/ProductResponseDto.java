@@ -20,17 +20,6 @@ public record ProductResponseDto(
         );
     }
 
-    private static String formatPrice(Price price) {
-        return String.format("%,d원", price.value());
-    }
-
-    private static String formatStock(Quantity quantity) {
-        if (quantity.value() == 0) {
-            return "재고 없음";
-        }
-        return quantity.value() + "개";
-    }
-
     private static String getPromotionName(Product product) {
         if (product instanceof PromotionProduct promotionProduct) {
             return promotionProduct.getPromotionName();

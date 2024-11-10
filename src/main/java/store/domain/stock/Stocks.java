@@ -41,7 +41,6 @@ public class Stocks {
         return regularStock;
     }
 
-    // 다시 추가된 메서드
     public void decrease(Quantity quantity, boolean usePromotion) {
         if (usePromotion && hasEnoughPromotionStock(quantity)) {
             promotionStock.decrease(quantity);

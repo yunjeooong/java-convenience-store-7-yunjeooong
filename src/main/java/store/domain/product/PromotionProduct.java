@@ -5,7 +5,8 @@ import store.domain.stock.Stocks;
 import store.domain.vo.Price;
 import store.domain.vo.Quantity;
 
-public class PromotionProduct extends RegularProduct {
+// PromotionProduct.java
+public class PromotionProduct extends Product {
     private final PromotionType promotionType;
 
     private PromotionProduct(String name, Price price, Stocks stocks, PromotionType promotionType) {
@@ -13,8 +14,13 @@ public class PromotionProduct extends RegularProduct {
         this.promotionType = promotionType;
     }
 
-    public static PromotionProduct create(String name, Price price, Quantity regularQuantity, Quantity promotionQuantity, PromotionType promotionType) {
-        return new PromotionProduct(name, price, Stocks.of(regularQuantity, promotionQuantity), promotionType);
+    public static PromotionProduct create(String name, Price price,
+                                          Quantity regularQuantity,
+                                          Quantity promotionQuantity,
+                                          PromotionType promotionType) {
+        return new PromotionProduct(name, price,
+                Stocks.of(regularQuantity, promotionQuantity),
+                promotionType);
     }
 
     @Override
@@ -22,67 +28,33 @@ public class PromotionProduct extends RegularProduct {
         return true;
     }
 
+    // 프로모션 적용 가능 여부 확인
     public boolean canApplyPromotion(Quantity quantity) {
-        return promotionType.isApplicable(quantity) && hasEnoughPromotionStock(quantity);
+        return promotionType.isApplicable(quantity) &&
+                stocks.hasEnoughPromotionStock( calculateFreeItems(quantity));
     }
 
-    private boolean hasEnoughPromotionStock(Quantity quantity) {
-        Quantity freeItems = calculateFreeItems(quantity);
-        return stocks.canFulfillOrder(freeItems);
+    // 무료 증정 수량 계산
+    public Quantity calculateFreeItems(Quantity purchaseQuantity) {
+        return promotionType.calculateFreeItems(purchaseQuantity);
     }
 
-    public Quantity calculateFreeItems(Quantity quantity) {
-        if (!canApplyPromotion(quantity)) {
-            return Quantity.ZERO;
-        }
-        return promotionType.calculateFreeItems(quantity);
-    }
-
-    public boolean canSuggestMoreItems(Quantity currentQuantity) {
-        return !promotionType.isApplicable(currentQuantity) && hasEnoughPromotionStock(calculateRequiredAdditionalQuantity(currentQuantity));
-    }
-
-    public Quantity calculateRequiredAdditionalQuantity(Quantity currentQuantity) {
-        return promotionType.calculateRequiredQuantity(currentQuantity);
-    }
-
-    @Override
-    public void removeStock(Quantity quantity) {
-        super.removeStock(quantity);
-        removePromotionStock(quantity);
-    }
-
-    private void removePromotionStock(Quantity quantity) {
-        if (canApplyPromotion(quantity)) {
-            Quantity freeItems = calculateFreeItems(quantity);
-            stocks.decrease(freeItems, true);
-        }
-    }
-
+    // 프로모션 상품명 반환
     public String getPromotionName() {
         return promotionType.getName();
     }
 
-    public boolean hasInsufficientPromotionStock(Quantity quantity) {
-        Quantity freeItems = promotionType.calculateFreeItems(quantity);
-        return !stocks.canFulfillOrder(freeItems);
+    // 추가 구매 제안을 위한 필요 수량 계산
+    public Quantity calculateRequiredAdditionalQuantity(Quantity currentQuantity) {
+        return promotionType.calculateRequiredQuantity(currentQuantity);
     }
 
+    // 프로모션 적용 불가능한 수량 계산
     public Quantity calculateNonPromotionQuantity(Quantity quantity) {
-        if (!hasInsufficientPromotionStock(quantity)) {
-            return Quantity.ZERO;
+        Quantity availableQuantity = stocks.availablePromotionQuantity();
+        if (availableQuantity.isLessThan(quantity)) {
+            return quantity.subtract(availableQuantity);
         }
-
-        Quantity availablePromotionQuantity = calculateAvailablePromotionQuantity(quantity);
-        return quantity.subtract(availablePromotionQuantity);
-    }
-
-    public Quantity calculateAvailablePromotionQuantity(Quantity requestedQuantity) {
-        int maxPromotionSets = stocks.availablePromotionQuantity().value() / promotionType.getRequiredQuantity();
-        return new Quantity(maxPromotionSets * promotionType.getRequiredQuantity());
-    }
-
-    public int getRequiredQuantity() {
-        return promotionType.getRequiredQuantity();
+        return Quantity.ZERO;
     }
 }
