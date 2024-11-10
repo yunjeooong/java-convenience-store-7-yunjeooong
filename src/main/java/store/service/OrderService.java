@@ -55,7 +55,8 @@ public class OrderService {
         if (!product.isPromotionProduct()) {
             return quantity;
         }
-        return addPromotionQuantity((PromotionProduct) product, quantity);
+        // 프로모션 수량을 추가하지 않고, 실제 구매한 수량만 반환
+        return quantity;
     }
 
     private Quantity addPromotionQuantity(PromotionProduct product, Quantity quantity) {

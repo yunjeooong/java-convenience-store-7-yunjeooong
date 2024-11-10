@@ -55,7 +55,7 @@ public class ReceiptFormatter {
     }
 
     private static String formatOrderLineItem(OrderResponseDto.OrderItemDto item) {
-        return String.format("%s\t\t%d \t%,d",
+        return String.format("%s\t\t%d\t%,d",
                 item.name(), item.quantity(), item.price().value());
     }
 

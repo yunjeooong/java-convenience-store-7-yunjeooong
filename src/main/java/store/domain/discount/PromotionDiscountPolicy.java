@@ -10,7 +10,8 @@ public class PromotionDiscountPolicy implements DiscountPolicy {
         Money totalDiscount = Money.ZERO;
         for (OrderLineItem item : order.getOrderItems()) {
             if (item.hasPromotion()) {
-                Money discount = item.calculateItemPrice().multiply(item.calculateFreeQuantity().value());
+                Money individualPrice = item.getPrice().toMoney();
+                Money discount = individualPrice.multiply(item.calculateFreeQuantity().value());
                 totalDiscount = totalDiscount.add(discount);
             }
         }

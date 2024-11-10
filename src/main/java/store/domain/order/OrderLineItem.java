@@ -53,7 +53,11 @@ public class OrderLineItem {
     }
 
     public OrderLineItem createFreeItemLine() {
-        return OrderLineItem.create(product, calculateFreeQuantity());
+        Quantity freeQuantity = calculateFreeQuantity();
+        if (freeQuantity.value() > 0) {
+            return OrderLineItem.create(product, freeQuantity);
+        }
+        return null;
     }
 
     public Price getPrice() {
@@ -66,5 +70,9 @@ public class OrderLineItem {
 
     public Quantity getQuantity() {
         return quantity;
+    }
+
+    public int getTotalQuantity() {
+        return quantity.value() + calculateFreeQuantity().value();
     }
 }
