@@ -1,6 +1,5 @@
 package store.domain.promotion;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import store.domain.vo.Quantity;
 
@@ -23,29 +22,13 @@ class PromotionTypeTest {
 
         assertEquals(2, promotion.calculateFreeItems(quantity), "4개 구매 시 2개의 증정 아이템이 있어야 합니다.");
     }
-
-    @Test
-    void 엠디추천프로모션_적용여부확인() {
-        PromotionType promotion = PromotionType.MD_RECOMMENDED;
-        Quantity quantity = new Quantity(1);
-
-        assertTrue(promotion.isApplicable(quantity), "1+1 프로모션은 1개 구매 시 적용되어야 합니다.");
-    }
-
     @Test
     void 엠디추천프로모션_증정아이템수계산() {
         PromotionType promotion = PromotionType.MD_RECOMMENDED;
         Quantity quantity = new Quantity(2);
 
-        assertEquals(2, promotion.calculateFreeItems(quantity), "2개 구매 시 2개의 증정 아이템이 있어야 합니다.");
-    }
-
-    @Test
-    void 번개세일_적용여부확인() {
-        PromotionType promotion = PromotionType.FLASH_SALE;
-        Quantity quantity = new Quantity(1);
-
-        assertTrue(promotion.isApplicable(quantity), "1+1 프로모션은 1개 구매 시 적용되어야 합니다.");
+        assertEquals(1, promotion.calculateFreeItems(quantity),
+                "2개 구매 시 1개의 증정 아이템이 제공되어야 합니다.");
     }
 
     @Test
@@ -53,6 +36,27 @@ class PromotionTypeTest {
         PromotionType promotion = PromotionType.FLASH_SALE;
         Quantity quantity = new Quantity(3);
 
-        assertEquals(3, promotion.calculateFreeItems(quantity), "3개 구매 시 3개의 증정 아이템이 있어야 합니다.");
+        assertEquals(1, promotion.calculateFreeItems(quantity),
+                "3개 구매 시 1개의 증정 아이템이 제공되어야 합니다.");
+    }
+
+    @Test
+    void 일플러스일_프로모션_증정아이템수_계산() {
+        PromotionType promotion = PromotionType.MD_RECOMMENDED;
+        Quantity quantity = new Quantity(2);
+
+        int freeItems = promotion.calculateFreeItems(quantity);
+        assertEquals(1, freeItems,
+                "2개 구매 시 1개의 증정 아이템이 제공되어야 합니다.");
+    }
+
+    @Test
+    void 일플러스일_프로모션_큰수량_증정아이템수_계산() {
+        PromotionType promotion = PromotionType.MD_RECOMMENDED;
+        Quantity quantity = new Quantity(4);
+
+        int freeItems = promotion.calculateFreeItems(quantity);
+        assertEquals(2, freeItems,
+                "4개 구매 시 2개의 증정 아이템이 제공되어야 합니다.");
     }
 }

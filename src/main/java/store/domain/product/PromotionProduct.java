@@ -9,7 +9,7 @@ import store.dto.response.ProductResponseDto;
 public class PromotionProduct extends Product {
     private final PromotionType promotionType;
 
-    private PromotionProduct(String name, Price price, Stocks stocks, PromotionType promotionType) {
+    public PromotionProduct(String name, Price price, Stocks stocks, PromotionType promotionType) {
         super(name, price, stocks);
         this.promotionType = promotionType;
     }
