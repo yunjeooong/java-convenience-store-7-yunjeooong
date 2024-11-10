@@ -1,7 +1,9 @@
 package store.controller;
 
+import java.util.List;
 import java.util.Map;
 import store.domain.vo.Quantity;
+import store.dto.request.OrderRequestDto;
 import store.dto.response.OrderResponseDto;
 import store.service.OrderFacade;
 import store.service.ReceiptService;
@@ -34,7 +36,7 @@ public class OrderController {
 
     private OrderResponseDto createOrder() {
         return viewContainer.getRetryTemplate().execute(() -> {
-            Map<String, Quantity> items = viewContainer.getInputView().readItems();
+            List<OrderRequestDto> items = viewContainer.getInputView().readItems();
             boolean hasMembership = viewContainer.getInputView().readMembershipChoice();
             return orderFacade.processOrder(items, hasMembership);
         });

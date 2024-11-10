@@ -55,7 +55,7 @@ public class PromotionProduct extends RegularProduct {
     private void removePromotionStock(Quantity quantity) {
         if (canApplyPromotion(quantity)) {
             Quantity freeItems = calculateFreeItems(quantity);
-            stocks.decrease(freeItems, true);  // true를 전달하여 프로모션 재고에서 차감
+            stocks.decrease(freeItems, true);
         }
     }
 

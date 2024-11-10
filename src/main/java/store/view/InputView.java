@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import store.domain.vo.Quantity;
+import store.dto.request.OrderRequestDto;
 import store.validator.InputValidator;
 import store.validator.InputValidator.PurchaseItem;
 
@@ -21,21 +22,19 @@ public class InputView {
             "현재 %s %d개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)";
 
 
-    public Map<String, Quantity> readItems() {
+    public List<OrderRequestDto> readItems() {
         System.out.println(PURCHASE_FORMAT_MESSAGE);
         String input = Console.readLine();
         List<InputValidator.PurchaseItem> purchaseItems =
                 InputValidator.validatePurchaseInput(input);
 
-        return convertToMap(purchaseItems);
+        return convertToOrderRequests(purchaseItems);
     }
 
-    private Map<String, Quantity> convertToMap(List<InputValidator.PurchaseItem> items) {
+    private List<OrderRequestDto> convertToOrderRequests(List<InputValidator.PurchaseItem> items) {
         return items.stream()
-                .collect(Collectors.toMap(
-                        InputValidator.PurchaseItem::productName,
-                        InputValidator.PurchaseItem::quantity
-                ));
+                .map(item -> new OrderRequestDto(item.productName(), item.quantity()))
+                .collect(Collectors.toList());
     }
 
     public boolean readMembershipChoice() {
