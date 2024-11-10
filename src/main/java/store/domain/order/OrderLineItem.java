@@ -1,22 +1,22 @@
 package store.domain.order;
 
-import store.domain.product.Product;
+import store.domain.product.RegularProduct;
 import store.domain.product.PromotionProduct;
 import store.domain.vo.Quantity;
 import store.domain.vo.Money;
 
 public class OrderLineItem {
-    private final Product product;
+    private final RegularProduct product;
     private final Quantity quantity;
     private final Money itemPrice;
 
-    private OrderLineItem(Product product, Quantity quantity) {
+    private OrderLineItem(RegularProduct product, Quantity quantity) {
         this.product = product;
         this.quantity = quantity;
         this.itemPrice = calculateItemPrice();
     }
 
-    public static OrderLineItem create(Product product, Quantity quantity) {
+    public static OrderLineItem create(RegularProduct product, Quantity quantity) {
         return new OrderLineItem(product, quantity);
     }
 

@@ -2,6 +2,8 @@ package store.domain.stock;
 
 import store.domain.vo.Quantity;
 
+import store.domain.vo.Quantity;
+
 public class Stocks {
     private final Stock regularStock;
     private final Stock promotionStock;
@@ -12,33 +14,35 @@ public class Stocks {
     }
 
     public static Stocks of(Quantity regularQuantity, Quantity promotionQuantity) {
-        return new Stocks(
-                new Stock(regularQuantity),
-                new Stock(promotionQuantity)
-        );
+        return new Stocks(new Stock(regularQuantity), new Stock(promotionQuantity));
     }
 
-    public boolean hasEnoughRegularStock(Quantity quantity) {
-        return regularStock.hasEnough(quantity);
+    public void decrease(Quantity quantity) {
+        Quantity promotionQuantity = calculatePromotionQuantity(quantity);
+        Quantity regularQuantity = quantity.subtract(promotionQuantity);
+
+        promotionStock.decrease(promotionQuantity);
+        regularStock.decrease(regularQuantity);
     }
 
-    public boolean hasEnoughPromotionStock(Quantity quantity) {
-        return promotionStock.hasEnough(quantity);
+    private Quantity calculatePromotionQuantity(Quantity requestedQuantity) {
+        return promotionStock.calculateAvailableQuantity(requestedQuantity);
     }
 
-    public void decreaseRegularStock(Quantity quantity) {
-        regularStock.decrease(quantity);
+    public boolean canFulfillOrder(Quantity quantity) {
+        Quantity promotionQuantity = calculatePromotionQuantity(quantity);
+        Quantity regularQuantity = quantity.subtract(promotionQuantity);
+
+        return regularStock.canFulfillOrder(regularQuantity);
     }
 
-    public void decreasePromotionStock(Quantity quantity) {
-        promotionStock.decrease(quantity);
+    // [수정] 일반 재고 수량 반환 메서드
+    public Quantity availableRegularQuantity() {
+        return regularStock.calculateAvailableQuantity(new Quantity(Integer.MAX_VALUE));
     }
 
-    public Quantity getRegularQuantity() {
-        return regularStock.getQuantity();
-    }
-
-    public Quantity getPromotionQuantity() {
-        return promotionStock.getQuantity();
+    // [추가] 프로모션 재고 수량 반환 메서드
+    public Quantity availablePromotionQuantity() {
+        return promotionStock.calculateAvailableQuantity(new Quantity(Integer.MAX_VALUE));
     }
 }

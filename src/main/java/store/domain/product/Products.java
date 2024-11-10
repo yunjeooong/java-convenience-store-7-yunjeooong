@@ -6,18 +6,18 @@ import java.util.Optional;
 import store.domain.vo.Quantity;
 
 public class Products {
-    private final List<Product> products;
+    private final List<RegularProduct> products;
 
-    public Products(List<Product> products) {
+    public Products(List<RegularProduct> products) {
         this.products = products;
     }
 
-    public static Products from(List<Product> products) {
+    public static Products from(List<RegularProduct> products) {
         return new Products(products);
     }
 
 
-    public Optional<Product> findByName(String name) {
+    public Optional<RegularProduct> findByName(String name) {
         return products.stream()
                 .filter(product -> product.getName().equals(name))
                 .findFirst();
@@ -33,7 +33,7 @@ public class Products {
         findByName(name).ifPresent(product -> product.removeStock(quantity));
     }
 
-    public List<Product> getAllProducts() {
+    public List<RegularProduct> getAllProducts() {
         return Collections.unmodifiableList(products);
     }
 }

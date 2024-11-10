@@ -7,10 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import store.domain.product.Product;
+import store.domain.product.RegularProduct;
 import store.domain.product.Products;
 import store.domain.product.PromotionProduct;
-import store.domain.stock.Stock;
 import store.domain.promotion.PromotionType;
 import store.domain.vo.Price;
 import store.domain.vo.Quantity;
@@ -19,11 +18,9 @@ import store.util.FileReader;
 public class ProductRepository {
     private final Products products;
     private final FileReader fileReader;
-    private final Map<Product, Stock> stockMap;
 
     private ProductRepository(FileReader fileReader) {
         this.fileReader = fileReader;
-        this.stockMap = new HashMap<>();
         this.products = initializeProducts();
     }
 
@@ -33,7 +30,6 @@ public class ProductRepository {
 
     private Products initializeProducts() {
         List<Product> allProducts = createAllProducts();
-        initializeStocks(allProducts);
         return Products.from(allProducts);
     }
 
@@ -87,7 +83,7 @@ public class ProductRepository {
 
     private void addPromotionVersion(List<ProductInfo> infos,
                                      Map<String, PromotionType> promotions,
-                                     Collection<Product> allProducts) {  // List -> Collection
+                                     Collection<Product> allProducts) {
         infos.stream()
                 .filter(ProductInfo::hasPromotion)
                 .map(info -> createPromotionProduct(info, promotions))
@@ -131,14 +127,6 @@ public class ProductRepository {
         );
     }
 
-    private void initializeStocks(List<Product> products) {
-        products.forEach(this::initializeStock);
-    }
-
-    private void initializeStock(Product product) {
-        stockMap.put(product, new Stock(product.getStockQuantity()));
-    }
-
     private Product createPromotionProduct(ProductInfo info, Map<String, PromotionType> promotions) {
         PromotionType type = promotions.get(info.promotionName());
         return PromotionProduct.create(
@@ -151,15 +139,12 @@ public class ProductRepository {
     }
 
     private Product createNormalProduct(ProductInfo info) {
-        return Product.create(
+        return RegularProduct.create(
                 info.name(),
                 info.price(),
-                info.quantity()
+                info.quantity(),
+                new Quantity(0)
         );
-    }
-
-    public Optional<Stock> getStock(Product product) {
-        return Optional.ofNullable(stockMap.get(product));
     }
 
     public Optional<Product> findByName(String name) {

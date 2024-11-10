@@ -2,22 +2,22 @@ package store.domain.product;
 
 import store.domain.vo.Price;
 import store. domain.vo.Quantity;
-import store.domain.stock.Stock;
+import store.domain.stock.Stocks;
 
-public class Product {
+public class RegularProduct {
     private final String name;
     private final Price price;
-    private final Stock stock;
+    protected final Stocks stocks;
 
-    public Product(String name, Price price, Stock stock) {
+    public RegularProduct(String name, Price price, Stocks stocks) {
         validateName(name);
         this.name = name;
         this.price = price;
-        this.stock = stock;
+        this.stocks = stocks;
     }
 
-    public static Product create(String name, Price price, Quantity quantity) {
-        return new Product(name, price, new Stock(quantity));
+    public static RegularProduct create(String name, Price price, Quantity regularQuantity, Quantity promotionQuantity) {
+        return new RegularProduct(name, price, Stocks.of(regularQuantity, promotionQuantity));
     }
 
     private void validateName(String name) {
@@ -27,11 +27,11 @@ public class Product {
     }
 
     public boolean hasEnoughStock(Quantity quantity) {
-        return stock.hasEnough(quantity);
+        return stocks.canFulfillOrder(quantity);
     }
 
     public void removeStock(Quantity quantity) {
-        stock.decrease(quantity);
+        stocks.decrease(quantity);
     }
 
     public Price calculateTotalPrice(Quantity quantity) {
@@ -47,6 +47,6 @@ public class Product {
     }
 
     public Quantity getStockQuantity() {
-        return stock.getQuantity();
+        return stocks.availableRegularQuantity();
     }
 }
