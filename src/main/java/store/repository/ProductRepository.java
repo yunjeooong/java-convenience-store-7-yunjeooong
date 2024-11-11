@@ -119,11 +119,16 @@ public class ProductRepository {
     }
 
     public void updateProduct(Product product) {
-        products = Products.from(
-                products.getAllProducts().stream()
-                        .map(p -> p.getName().equals(product.getName()) ? product : p)
-                        .collect(Collectors.toList())
-        );
+        List<Product> updatedProducts = products.getAllProducts().stream()
+                .map(p -> shouldUpdate(p, product) ? product : p)
+                .collect(Collectors.toList());
+
+        products = Products.from(updatedProducts);
+    }
+
+    private boolean shouldUpdate(Product existing, Product updated) {
+        return existing.getName().equals(updated.getName())
+                && existing.isPromotionProduct() == updated.isPromotionProduct();
     }
 
 

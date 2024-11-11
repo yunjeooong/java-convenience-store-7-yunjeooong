@@ -18,28 +18,27 @@ public class ProductService {
     public static ProductService create(ProductRepository productRepository) {
         return new ProductService(productRepository);
     }
-
     public List<ProductResponseDto> getAllProducts() {
         return productRepository.findAll().stream()
                 .map(this::toProductResponseDto)
+                //.filter(this::hasAvailableStock)
                 .collect(Collectors.toList());
     }
-
     private ProductResponseDto toProductResponseDto(Product product) {
         Stock stock = getProductStock(product);
         return ProductResponseDto.from(product, stock.getQuantity());
     }
-
     private Stock getProductStock(Product product) {
         return product.getStocks()
                 .getStock(product.isPromotionProduct());
     }
-
+    private boolean hasAvailableStock(ProductResponseDto product) {
+        return product.stockStatus() > 0;
+    }
     public Products getProducts() {
         List<Product> products = productRepository.findAll();
         return Products.from(products);
     }
-
     public Product findProduct(String name) {
         return productRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException(

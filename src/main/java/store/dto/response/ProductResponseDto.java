@@ -10,50 +10,31 @@ public record ProductResponseDto(
         long stockStatus,
         String promotionName
 ) {
-    public static ProductResponseDto from(Product product, Quantity stockQuantity) {
-        return new Builder()
-                .withName(product.getName())
-                .withPrice(product.calculateTotalPrice(new Quantity(1)).value())
-                .withStockStatus(stockQuantity.value())
-                .withPromotionName(getPromotionName(product))
-                .build();
+    public static ProductResponseDto from(Product product, Quantity quantity) {
+        return new ProductResponseDto(
+                product.getName(),
+                product.getPrice().value(),
+                quantity.value(),
+                product.getName()
+        );
     }
 
-    private static String getPromotionName(Product product) {
-        if (product.isPromotionProduct()) {
-            return ((PromotionProduct) product).promotionName();
-        }
-        return "";
+    public boolean hasPromotion() {
+        return !promotionName.isEmpty() && !promotionName.equals("null");
     }
 
-    public static class Builder {
-        private String name;
-        private long price;
-        private long stockStatus;
-        private String promotionName = "";
-
-        public Builder withName(String name) {
-            this.name = name;
-            return this;
+    public String getStockDisplay() {
+        if (stockStatus == 0) {
+            // 프로모션 상품과 일반 상품 구분
+            if (hasPromotion()) {
+                return String.format("%s %s", stockStatus + "개", promotionName);
+            }
+            return "재고 없음";
         }
-
-        public Builder withPrice(long price) {
-            this.price = price;
-            return this;
+        // 재고가 있는 경우
+        if (hasPromotion()) {
+            return String.format("%s %s", stockStatus + "개", promotionName);
         }
-
-        public Builder withStockStatus(long stockStatus) {
-            this.stockStatus = stockStatus;
-            return this;
-        }
-
-        public Builder withPromotionName(String promotionName) {
-            this.promotionName = promotionName;
-            return this;
-        }
-
-        public ProductResponseDto build() {
-            return new ProductResponseDto(name, price, stockStatus, promotionName);
-        }
+        return stockStatus + "개";
     }
 }

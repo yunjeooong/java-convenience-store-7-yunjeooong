@@ -1,6 +1,7 @@
 package store.service;
 
 import java.util.Map;
+import java.util.HashMap;
 import store.domain.order.Order;
 import store.domain.order.OrderLineItem;
 import store.domain.product.Product;
@@ -20,14 +21,43 @@ public class OrderService {
 
     public Order createOrder(Map<String, Quantity> items, boolean hasMembership) {
         validateItems(items);
+        Map<String, Product> productMap = createProductMap(items);
+        Order order = createOrderWithItems(items, productMap);
+        updateOrderAndProducts(order, productMap);
+        return order;
+    }
+
+    private Map<String, Product> createProductMap(Map<String, Quantity> items) {
+        Map<String, Product> productMap = new HashMap<>();
+        for (String productName : items.keySet()) {
+            productMap.put(productName, findProduct(productName));
+        }
+        return productMap;
+    }
+
+    private Order createOrderWithItems(Map<String, Quantity> items, Map<String, Product> productMap) {
         Order order = Order.create();
+        addOrderItems(items, productMap, order);
+        return order;
+    }
+
+    private void addOrderItems(Map<String, Quantity> items, Map<String, Product> productMap, Order order) {
         for (Map.Entry<String, Quantity> entry : items.entrySet()) {
-            Product product = findProduct(entry.getKey());
+            Product product = productMap.get(entry.getKey());
             order.addLineItem(product, entry.getValue());
         }
+    }
+
+    private void updateOrderAndProducts(Order order, Map<String, Product> productMap) {
         order.removeStocks();
-        updateProducts(order.getLineItems());
-        return order;
+        updateProducts(order, productMap);
+    }
+
+    private void updateProducts(Order order, Map<String, Product> productMap) {
+        for (OrderLineItem item : order.getLineItems()) {
+            Product product = productMap.get(item.getProductName());
+            productRepository.updateProduct(product);
+        }
     }
 
     private void validateItems(Map<String, Quantity> items) {
@@ -42,13 +72,6 @@ public class OrderService {
     private void validateStock(Product product, Quantity quantity) {
         if (!product.hasEnoughStock(quantity)) {
             throw new IllegalArgumentException(ERROR_INSUFFICIENT_STOCK);
-        }
-    }
-
-    private void updateProducts(List<OrderLineItem> lineItems) {
-        for (OrderLineItem item : lineItems) {
-            Product product = findProduct(item.getProductName());
-            productRepository.updateProduct(product);
         }
     }
 

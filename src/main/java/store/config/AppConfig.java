@@ -19,8 +19,28 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AppConfig {
+    private final ProductRepository productRepository;
+    private final FileReader fileReader;
+    private final InputView inputView;
+    private final OutputView outputView;
+    private final ViewContainer viewContainer;
+    private final ProductService productService;
+    private final OrderService orderService;
+    private final DiscountManager discountManager;
+    private final OrderFacade orderFacade;
+    private final ReceiptService receiptService;
 
-    public AppConfig() {
+    private AppConfig() {
+        this.fileReader = FileReader.create();
+        this.productRepository = ProductRepository.create(fileReader);
+        this.inputView = new InputView();
+        this.outputView = new OutputView();
+        this.viewContainer = new ViewContainer(inputView, outputView);
+        this.productService = ProductService.create(productRepository);
+        this.orderService = new OrderService(productRepository);
+        this.discountManager = createDiscountManager();
+        this.orderFacade = new OrderFacade(orderService, discountManager, productRepository);
+        this.receiptService = new ReceiptService(outputView);
     }
 
     private static class SingleTonHelper {
@@ -31,35 +51,7 @@ public class AppConfig {
         return SingleTonHelper.INSTANCE;
     }
 
-    public FileReader fileReader() {
-        return FileReader.create();
-    }
-
-    public InputView inputView() {
-        return new InputView();
-    }
-
-    public OutputView outputView() {
-        return new OutputView();
-    }
-
-    public ViewContainer viewContainer() {
-        return new ViewContainer(inputView(), outputView());
-    }
-
-    public ProductRepository productRepository() {
-        return ProductRepository.create(fileReader());
-    }
-
-    public ProductService productService() {
-        return ProductService.create(productRepository());
-    }
-
-    public OrderService orderService() {
-        return new OrderService(productRepository());
-    }
-
-    public DiscountManager discountManager() {
+    private DiscountManager createDiscountManager() {
         List<DiscountPolicy> policies = Arrays.asList(
                 new PromotionDiscountPolicy(),
                 new MembershipDiscountPolicy()
@@ -67,28 +59,56 @@ public class AppConfig {
         return DiscountManager.create(policies);
     }
 
+    public FileReader fileReader() {
+        return this.fileReader;
+    }
+
+    public InputView inputView() {
+        return this.inputView;
+    }
+
+    public OutputView outputView() {
+        return this.outputView;
+    }
+
+    public ViewContainer viewContainer() {
+        return this.viewContainer;
+    }
+
+    public ProductRepository productRepository() {
+        return this.productRepository;
+    }
+
+    public ProductService productService() {
+        return this.productService;
+    }
+
+    public OrderService orderService() {
+        return this.orderService;
+    }
+
+    public DiscountManager discountManager() {
+        return this.discountManager;
+    }
+
     public OrderFacade orderFacade() {
-        return new OrderFacade(
-                orderService(),
-                discountManager(),
-                productRepository()
-        );
+        return this.orderFacade;
     }
 
     public ReceiptService receiptService() {
-        return new ReceiptService(outputView());
+        return this.receiptService;
     }
 
     public OrderController orderController() {
         return new OrderController(
-                viewContainer(),
-                orderFacade(),
-                productService(),
-                receiptService()
+                viewContainer,
+                orderFacade,
+                productService,
+                receiptService
         );
     }
 
     public MainController mainController() {
-        return new MainController(viewContainer(), productService());
+        return new MainController(viewContainer, productService);
     }
 }
