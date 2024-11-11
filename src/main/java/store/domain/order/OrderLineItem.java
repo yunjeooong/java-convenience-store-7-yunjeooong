@@ -20,11 +20,23 @@ public class OrderLineItem {
     }
 
     public void removeStock() {
-        product.removeStock(quantity);
+        if (product instanceof PromotionProduct) {
+            product.removeStock(calculateTotalQuantity());
+        } else {
+            product.removeStock(quantity);
+        }
     }
 
-    public String productName() {
+    private Quantity calculateTotalQuantity() {
+        return quantity.add(calculateFreeQuantity());
+    }
+
+    public String getProductName() {  // productName() -> getProductName()
         return product.getName();
+    }
+
+    public Price getPrice() {  // 추가된 메서드
+        return product.getPrice();
     }
 
     public int quantityValue() {
@@ -54,19 +66,11 @@ public class OrderLineItem {
         return OrderLineItem.create(product, freeQuantity);
     }
 
-    public Price getPrice() {
-        return new Price(calculateItemPrice().value());
-    }
-
     public Product getProduct() {
         return product;
     }
 
     public Quantity getQuantity() {
         return quantity;
-    }
-
-    public int getTotalQuantity() {
-        return quantity.value() + calculateFreeQuantity().value();
     }
 }

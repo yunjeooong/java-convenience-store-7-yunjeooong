@@ -85,7 +85,12 @@ public class Order {
         orderItems.add(OrderLineItem.create(product, quantity));
     }
 
-    public static Order create() {  // 추가된 메서드
+    public static Order create() {
         return new Order(new ArrayList<>(), false);
     }
+
+    public List<OrderLineItem> getLineItems() {
+        return Collections.unmodifiableList(orderItems);
+    }
+
 }

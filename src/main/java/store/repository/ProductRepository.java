@@ -13,7 +13,6 @@ import store.domain.product.PromotionProduct;
 import store.domain.promotion.PromotionType;
 import store.domain.vo.Quantity;
 import store.infrastructure.FileReader;
-import store.infrastructure.StockFileManager;
 import store.util.PromotionUtils;
 import store.util.ProductInfoParser;
 import store.util.ProductInfoParser.ProductInfo;
@@ -21,16 +20,14 @@ import store.util.ProductInfoParser.ProductInfo;
 public class ProductRepository {
     private Products products;
     private final FileReader fileReader;
-    private final StockFileManager stockFileManager;
 
-    private ProductRepository(FileReader fileReader, StockFileManager stockFileManager) {
+    private ProductRepository(FileReader fileReader) {
         this.fileReader = fileReader;
-        this.stockFileManager = stockFileManager;
         this.products = initializeProducts();
     }
 
-    public static ProductRepository create(FileReader fileReader, StockFileManager stockFileManager) {
-        return new ProductRepository(fileReader, stockFileManager);
+    public static ProductRepository create(FileReader fileReader) {
+        return new ProductRepository(fileReader);
     }
 
     private Products initializeProducts() {
@@ -78,10 +75,6 @@ public class ProductRepository {
         allProducts.add(createNormalProduct(regularInfo));
     }
 
-    public void refreshProducts() {
-        this.products = initializeProducts();
-    }
-
     private ProductInfo findNormalInfoOrCreateEmpty(List<ProductInfo> infos) {
         return infos.stream()
                 .filter(info -> !info.hasPromotion())
@@ -121,7 +114,17 @@ public class ProductRepository {
         return products.getAllProducts();
     }
 
-    public void saveCurrentState() {
-        stockFileManager.saveStockState(findAll());
+    public void refreshProducts() {
+        this.products = initializeProducts();
     }
+
+    public void updateProduct(Product product) {
+        products = Products.from(
+                products.getAllProducts().stream()
+                        .map(p -> p.getName().equals(product.getName()) ? product : p)
+                        .collect(Collectors.toList())
+        );
+    }
+
+
 }

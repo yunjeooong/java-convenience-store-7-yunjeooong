@@ -20,7 +20,6 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getAllProducts() {
-        productRepository.refreshProducts();
         return productRepository.findAll().stream()
                 .map(this::toProductResponseDto)
                 .collect(Collectors.toList());

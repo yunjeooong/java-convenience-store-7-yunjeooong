@@ -1,26 +1,31 @@
 package store.infrastructure;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class FileReader {
-    private final StockFileManager stockFileManager;
+    private static final String PRODUCTS_FILE =  "src/main/resources/products.md";
 
-    private FileReader(StockFileManager stockFileManager) {
-        this.stockFileManager = stockFileManager;
+    private FileReader() {
     }
 
-    public static FileReader create(StockFileManager stockFileManager) {
-        return new FileReader(stockFileManager);
+    public static FileReader create() {
+        return new FileReader();
     }
 
     public List<String> readProducts() {
-        return stockFileManager.readCurrentProducts().stream()
-                .skip(1)
-                .collect(Collectors.toList());
+        try {
+            return Files.readAllLines(Paths.get(PRODUCTS_FILE), StandardCharsets.UTF_8)
+                    .stream()
+                    .skip(1)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new IllegalStateException("[ERROR] 상품 정보를 불러올 수 없습니다.");
+        }
     }
 
     public List<String> readPromotions() {

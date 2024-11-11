@@ -4,7 +4,6 @@ import store.domain.promotion.PromotionType;
 import store.domain.stock.Stocks;
 import store.domain.vo.Price;
 import store.domain.vo.Quantity;
-import store.dto.response.ProductResponseDto;
 
 public class PromotionProduct extends Product {
     private final PromotionType promotionType;
@@ -15,7 +14,9 @@ public class PromotionProduct extends Product {
     }
 
     public static PromotionProduct create(String name, Price price,
-                                          Quantity regularQuantity, Quantity promotionQuantity, PromotionType promotionType) {
+                                          Quantity regularQuantity,
+                                          Quantity promotionQuantity,
+                                          PromotionType promotionType) {
         return new PromotionProduct(
                 name,
                 price,
@@ -24,33 +25,29 @@ public class PromotionProduct extends Product {
         );
     }
 
-    public boolean isOnePlusOnePromotion() {
-        return promotionType == PromotionType.MD_RECOMMENDED ||
-                promotionType == PromotionType.FLASH_SALE;
+    @Override
+    public void removeStock(Quantity quantity) {
+        stocks.removeStock(quantity, isPromotionProduct());
     }
-
 
     @Override
     public boolean isPromotionProduct() {
         return true;
     }
 
-    public boolean canApplyPromotion(Quantity orderQuantity) {
-        return promotionType.isApplicable(orderQuantity) &&
-                stocks.hasEnoughPromotionStock(orderQuantity);
+    public boolean canApplyPromotion(Quantity quantity) {
+        return promotionType.isApplicable(quantity) &&
+                stocks.hasEnoughPromotionStock(quantity);
     }
 
-    public Quantity calculateFreeItems(Quantity orderQuantity) {
-        if (!promotionType.isApplicable(orderQuantity)) {
+    public Quantity calculateFreeItems(Quantity quantity) {
+        if (!promotionType.isApplicable(quantity)) {
             return Quantity.ZERO;
         }
-        return new Quantity(promotionType.calculateFreeItems(orderQuantity));
+        return new Quantity(promotionType.calculateFreeItems(quantity));
     }
 
-    public void addPromotionInfoToResponse(ProductResponseDto.Builder builder) {
-        builder.withPromotionName(promotionType.getName());
-    }
-    public String promotionName() {  // getter 형식을 피하고 행위를 표현
+    public String promotionName() {
         return promotionType.getName();
     }
 }

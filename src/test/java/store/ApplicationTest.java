@@ -16,7 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ApplicationTest extends NsTest {
 
-
     @Test
     void 파일에_있는_상품_목록_출력() {
         assertSimpleTest(() -> {

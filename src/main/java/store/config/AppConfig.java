@@ -7,7 +7,6 @@ import store.domain.discount.DiscountPolicy;
 import store.domain.discount.MembershipDiscountPolicy;
 import store.domain.discount.PromotionDiscountPolicy;
 import store.infrastructure.FileReader;
-import store.infrastructure.StockFileManager;
 import store.repository.ProductRepository;
 import store.service.OrderFacade;
 import store.service.OrderService;
@@ -20,28 +19,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AppConfig {
-    private final boolean isTestMode;
 
-    // 테스트용 생성자
-    public AppConfig(boolean isTestMode) {
-        this.isTestMode = isTestMode;
+    public AppConfig() {
     }
 
-    // 실제 운영용 싱글톤 인스턴스
     private static class SingleTonHelper {
-        private static final AppConfig INSTANCE = new AppConfig(false);
+        private static final AppConfig INSTANCE = new AppConfig();
     }
 
     public static AppConfig getInstance() {
         return SingleTonHelper.INSTANCE;
     }
 
-    public StockFileManager stockFileManager() {
-        return new StockFileManager(isTestMode);
-    }
-
     public FileReader fileReader() {
-        return FileReader.create(stockFileManager());
+        return FileReader.create();
     }
 
     public InputView inputView() {
@@ -57,7 +48,7 @@ public class AppConfig {
     }
 
     public ProductRepository productRepository() {
-        return ProductRepository.create(fileReader(), stockFileManager());
+        return ProductRepository.create(fileReader());
     }
 
     public ProductService productService() {

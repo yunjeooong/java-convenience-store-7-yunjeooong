@@ -55,7 +55,7 @@ public record OrderResponseDto(
     public record OrderItemDto(String name, int quantity, Money price) {
         public static OrderItemDto from(OrderLineItem item) {
             return new OrderItemDto(
-                    item.productName(),
+                    item.getProductName(),
                     item.quantityValue(),
                     item.calculateItemPrice()
             );
@@ -65,7 +65,7 @@ public record OrderResponseDto(
     public record FreeItemDto(String name, int quantity) {
         public static FreeItemDto from(OrderLineItem item) {
             return new FreeItemDto(
-                    item.productName(),
+                    item.getProductName(),
                     item.getQuantity().value()
             );
         }

@@ -11,16 +11,19 @@ public record ProductResponseDto(
         String promotionName
 ) {
     public static ProductResponseDto from(Product product, Quantity stockQuantity) {
-        Builder builder = new Builder()
+        return new Builder()
                 .withName(product.getName())
                 .withPrice(product.calculateTotalPrice(new Quantity(1)).value())
-                .withStockStatus(stockQuantity.value());
+                .withStockStatus(stockQuantity.value())
+                .withPromotionName(getPromotionName(product))
+                .build();
+    }
 
+    private static String getPromotionName(Product product) {
         if (product.isPromotionProduct()) {
-            ((PromotionProduct) product).addPromotionInfoToResponse(builder);
+            return ((PromotionProduct) product).promotionName();
         }
-
-        return builder.build();
+        return "";
     }
 
     public static class Builder {

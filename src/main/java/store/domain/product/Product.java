@@ -30,7 +30,7 @@ public abstract class Product {
     }
 
     public void removeStock(Quantity quantity) {
-        stocks.decrease(quantity, isPromotionProduct());
+        stocks.removeStock(quantity, isPromotionProduct());
     }
 
     public Price calculateTotalPrice(Quantity quantity) {
@@ -39,6 +39,10 @@ public abstract class Product {
 
     public String getName() {
         return name;
+    }
+
+    public Price getPrice() {
+        return price;
     }
 
     public Stocks getStocks() {
