@@ -25,6 +25,7 @@ public abstract class Product {
             throw new IllegalArgumentException(ERROR_NAME_REQUIRED);
         }
     }
+
     public void validateStock(Quantity quantity) {
         if (!hasEnoughStock(quantity)) {
             throw new IllegalArgumentException(ERROR_EXCEEDS_STOCK);
@@ -32,10 +33,25 @@ public abstract class Product {
     }
 
     public boolean hasEnoughStock(Quantity quantity) {
-        if (isPromotionProduct()) {
-            return stocks.hasEnoughPromotionStock(quantity);
+        if (!isPromotionProduct()) {
+            return stocks.hasEnoughRegularStock(quantity);
         }
-        return stocks.hasEnoughRegularStock(quantity);
+        return hasEnoughTotalStock(quantity);
+    }
+
+    private boolean hasEnoughTotalStock(Quantity quantity) {
+        Quantity required = calculateTotalRequired(quantity);
+        Quantity available = calculateTotalAvailable();
+        return !available.isLessThan(required);
+    }
+
+    private Quantity calculateTotalRequired(Quantity quantity) {
+        return quantity.add(getPromotionType().calculateFreeItems(quantity));
+    }
+
+    private Quantity calculateTotalAvailable() {
+        return stocks.getRegularStock().getQuantity()
+                .add(stocks.getPromotionStock().getQuantity());
     }
 
     public void removeStock(Quantity quantity) {
