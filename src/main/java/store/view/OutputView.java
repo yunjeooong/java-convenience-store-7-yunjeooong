@@ -29,5 +29,4 @@ public class OutputView {
         System.out.println(exception.getMessage());
     }
 
-
 }

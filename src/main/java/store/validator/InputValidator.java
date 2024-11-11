@@ -1,9 +1,7 @@
 package store.validator;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import store.domain.vo.Quantity;
@@ -27,13 +25,12 @@ public class InputValidator {
         }
 
         validateNotEmpty(items);
-        validateNoDuplicates(items);
         return items;
     }
 
     private static void validateInput(String input) {
         if (input == null || input.trim().isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 입력이 비어있습니다.");
+            throw new IllegalArgumentException(ErrorMessages.EMPTY_INPUT.getMessage());
         }
     }
 
@@ -49,13 +46,13 @@ public class InputValidator {
 
     private static void validateParts(String[] parts) {
         if (parts.length != 2) {
-            throw new IllegalArgumentException("[ERROR] 상품 정보가 올바르지 않습니다. 상품명-수량 형식으로 입력해주세요.");
+            throw new IllegalArgumentException(ErrorMessages.INVALID_ITEM_FORMAT.getMessage());
         }
     }
 
     private static String validateName(String name) {
         if (name.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 상품명은 비어있을 수 없습니다.");
+            throw new IllegalArgumentException(ErrorMessages.EMPTY_PRODUCT_NAME.getMessage());
         }
         return name;
     }
@@ -64,36 +61,46 @@ public class InputValidator {
         try {
             int quantity = Integer.parseInt(quantityStr);
             if (quantity <= 0) {
-                throw new IllegalArgumentException("[ERROR] 수량은 1개 이상이어야 합니다.");
+                throw new IllegalArgumentException(ErrorMessages.INVALID_QUANTITY.getMessage());
             }
             return new Quantity(quantity);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("[ERROR] 수량은 숫자여야 합니다.");
+            throw new IllegalArgumentException(ErrorMessages.QUANTITY_NOT_NUMBER.getMessage());
         }
     }
 
     private static void validateNotEmpty(List<PurchaseItem> items) {
         if (items.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 최소 1개 이상의 상품을 입력해주세요.");
-        }
-    }
-
-    private static void validateNoDuplicates(List<PurchaseItem> items) {
-        Set<String> names = new HashSet<>();
-        for (PurchaseItem item : items) {
-            if (!names.add(item.productName())) {
-                throw new IllegalArgumentException(
-                        String.format("[ERROR] 중복된 상품이 있습니다: %s", item.productName()));
-            }
+            throw new IllegalArgumentException(ErrorMessages.EMPTY_ITEMS.getMessage());
         }
     }
 
     public static void validateYesNo(String input) {
         if (!YES.equals(input) && !NO.equals(input)) {
-            throw new IllegalArgumentException("[ERROR] Y 또는 N으로 입력해주세요.");
+            throw new IllegalArgumentException(ErrorMessages.INVALID_YES_NO_INPUT.getMessage());
         }
     }
 
     public record PurchaseItem(String productName, Quantity quantity) {
+    }
+
+    public enum ErrorMessages {
+        EMPTY_INPUT("[ERROR] 입력이 비어있습니다. 다시 입력해 주세요."),
+        INVALID_ITEM_FORMAT("[ERROR] 상품 정보가 올바르지 않습니다. 다시 입력해주세요."),
+        EMPTY_PRODUCT_NAME("[ERROR] 상품명은 비어있을 수 없습니다. 다시 입력해주세요."),
+        INVALID_QUANTITY("[ERROR] 수량은 1개 이상이어야 합니다."),
+        QUANTITY_NOT_NUMBER("[ERROR] 수량은 숫자여야 합니다."),
+        EMPTY_ITEMS("[ERROR] 최소 1개 이상의 상품을 입력해주세요."),
+        INVALID_YES_NO_INPUT("[ERROR] Y 또는 N으로 입력해주세요. 다시 입력해 주세요.");
+
+        private final String message;
+
+        ErrorMessages(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }
