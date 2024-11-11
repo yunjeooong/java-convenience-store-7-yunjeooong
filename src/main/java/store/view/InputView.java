@@ -60,16 +60,4 @@ public class InputView {
         validateYesNo(input);
         return "Y".equals(input);
     }
-
-
-    public boolean readInsufficientStockConfirmation(String productName,
-                                                     int nonPromotionQuantity) {
-        System.out.printf(INSUFFICIENT_STOCK_CONFIRMATION_FORMAT,
-                productName,
-                nonPromotionQuantity);
-        return readYesNo();
-    }
-
-
-
 }

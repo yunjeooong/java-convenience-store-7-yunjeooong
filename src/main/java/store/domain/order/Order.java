@@ -74,10 +74,6 @@ public class Order {
         orderItems.forEach(OrderLineItem::removeStock);
     }
 
-    public Money getPromotionDiscount() {
-        return promotionDiscount;
-    }
-
     public Money getMembershipDiscount() {
         return membershipDiscount;
     }

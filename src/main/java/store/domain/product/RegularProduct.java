@@ -15,12 +15,12 @@ public class RegularProduct extends Product {
     }
     @Override
     public String promotionName() {
-        return "";  // 일반 상품은 빈 문자열 반환
+        return "";
     }
 
     @Override
     public PromotionType getPromotionType() {
-        return null;  // 프로모션 타입은 null로 유지
+        return null;
     }
 
     @Override
