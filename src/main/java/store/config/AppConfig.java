@@ -30,7 +30,7 @@ public class AppConfig {
     private final OrderFacade orderFacade;
     private final ReceiptService receiptService;
 
-    public AppConfig() {  // 생성자를 public으로 변경
+    public AppConfig() {
         this.fileReader = FileReader.create();
         this.productRepository = ProductRepository.create(fileReader);
         this.inputView = new InputView();
@@ -51,7 +51,6 @@ public class AppConfig {
         return DiscountManager.create(policies);
     }
 
-    // getter 메서드들은 그대로 유지
     public FileReader fileReader() {
         return this.fileReader;
     }

@@ -38,7 +38,6 @@ public class PromotionProduct extends Product {
         return promotionType;
     }
 
-    // 추가된 메서드들
     public boolean canApplyPromotion(Quantity quantity) {
         return promotionType.isApplicable(quantity);
     }

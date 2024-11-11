@@ -52,8 +52,8 @@ public abstract class Product {
         return stocks;
     }
 
-    public abstract String promotionName();  // 추가된 추상 메서드
+    public abstract String promotionName();
 
     public abstract boolean isPromotionProduct();
-    public abstract PromotionType getPromotionType();  // 추가된 추상 메서드
+    public abstract PromotionType getPromotionType();
 }

@@ -31,11 +31,11 @@ public class OrderLineItem {
         return quantity.add(calculateFreeQuantity());
     }
 
-    public String getProductName() {  // productName() -> getProductName()
+    public String getProductName() {
         return product.getName();
     }
 
-    public Price getPrice() {  // 추가된 메서드
+    public Price getPrice() {
         return product.getPrice();
     }
 
@@ -55,7 +55,7 @@ public class OrderLineItem {
         if (!hasPromotion()) {
             return Quantity.ZERO;
         }
-        return product.getPromotionType().calculateFreeItems(quantity);  // 직접 호출
+        return product.getPromotionType().calculateFreeItems(quantity);
     }
 
     public OrderLineItem createFreeItemLine() {

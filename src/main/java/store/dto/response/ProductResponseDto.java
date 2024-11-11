@@ -9,28 +9,34 @@ public record ProductResponseDto(
         long stockStatus,
         String promotionName
 ) {
+    private static final String NO_STOCK_MESSAGE = "재고 없음";
+    private static final String NULL_PROMOTION = "null";
+    private static final String STOCK_UNIT = "개";
+
     public static ProductResponseDto from(Product product, Quantity quantity) {
         return new ProductResponseDto(
                 product.getName(),
                 product.getPrice().value(),
                 quantity.value(),
                 product.promotionName()
-
         );
     }
 
     public boolean hasPromotion() {
-        return promotionName != null && !promotionName.equals("null");
+        return promotionName != null && !promotionName.equals(NULL_PROMOTION);
     }
 
     public String getStockDisplay() {
         if (stockStatus == 0) {
-            return "재고 없음";
+            return NO_STOCK_MESSAGE;
         }
-        return stockStatus + "개";
+        return stockStatus + STOCK_UNIT;
     }
 
     public String getPromotionDisplay() {
-        return hasPromotion() ? promotionName : "";
+        if (hasPromotion()) {
+            return promotionName;
+        }
+        return "";
     }
 }

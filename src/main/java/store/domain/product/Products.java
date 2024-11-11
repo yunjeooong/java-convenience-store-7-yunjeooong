@@ -1,13 +1,9 @@
 package store.domain.product;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import store.domain.stock.PromotionStock;
-import store.domain.stock.RegularStock;
-import store.domain.stock.Stocks;
-import store.domain.vo.Quantity;
+
 
 public class Products {
     private final List<Product> products;

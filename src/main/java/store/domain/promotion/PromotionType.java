@@ -26,7 +26,7 @@ public enum PromotionType {
             if (!isApplicable(quantity)) {
                 return Quantity.ZERO;
             }
-            return Quantity.ZERO;  // MD추천상품은 무료 상품 없음
+            return Quantity.ZERO;
         }
     },
     FLASH_SALE("반짝할인", 1, 1,
@@ -37,7 +37,7 @@ public enum PromotionType {
             if (!isApplicable(quantity)) {
                 return Quantity.ZERO;
             }
-            return Quantity.ZERO;  // 반짝할인은 무료 상품 없음
+            return Quantity.ZERO;
         }
     };
 
@@ -78,5 +78,5 @@ public enum PromotionType {
                 quantity.value() >= this.buyQuantity;
     }
 
-    public abstract Quantity calculateFreeItems(Quantity quantity);  // 추상 메서드로 변경
+    public abstract Quantity calculateFreeItems(Quantity quantity);
 }
