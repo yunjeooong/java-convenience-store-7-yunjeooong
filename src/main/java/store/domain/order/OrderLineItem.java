@@ -55,7 +55,7 @@ public class OrderLineItem {
         if (!hasPromotion()) {
             return Quantity.ZERO;
         }
-        return ((PromotionProduct) product).calculateFreeItems(quantity);
+        return product.getPromotionType().calculateFreeItems(quantity);  // 직접 호출
     }
 
     public OrderLineItem createFreeItemLine() {

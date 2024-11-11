@@ -30,7 +30,7 @@ public class AppConfig {
     private final OrderFacade orderFacade;
     private final ReceiptService receiptService;
 
-    private AppConfig() {
+    public AppConfig() {  // 생성자를 public으로 변경
         this.fileReader = FileReader.create();
         this.productRepository = ProductRepository.create(fileReader);
         this.inputView = new InputView();
@@ -43,14 +43,6 @@ public class AppConfig {
         this.receiptService = new ReceiptService(outputView);
     }
 
-    private static class SingleTonHelper {
-        private static final AppConfig INSTANCE = new AppConfig();
-    }
-
-    public static AppConfig getInstance() {
-        return SingleTonHelper.INSTANCE;
-    }
-
     private DiscountManager createDiscountManager() {
         List<DiscountPolicy> policies = Arrays.asList(
                 new PromotionDiscountPolicy(),
@@ -59,6 +51,7 @@ public class AppConfig {
         return DiscountManager.create(policies);
     }
 
+    // getter 메서드들은 그대로 유지
     public FileReader fileReader() {
         return this.fileReader;
     }

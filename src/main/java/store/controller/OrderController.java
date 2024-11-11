@@ -108,4 +108,7 @@ public class OrderController {
         }
         return wantsToContinue;
     }
+    public boolean wantsToContinueShopping() {
+        return viewContainer.readAdditionalPurchase();
+    }
 }

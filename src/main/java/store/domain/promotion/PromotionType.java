@@ -9,17 +9,41 @@ import store.domain.vo.Quantity;
 public enum PromotionType {
     CARBONATED_DRINKS_TWO_PLUS_ONE("탄산2+1", 2, 1,
             LocalDate.of(2024, 1, 1),
-            LocalDate.of(2024, 12, 31)),
+            LocalDate.of(2024, 12, 31)) {
+        @Override
+        public Quantity calculateFreeItems(Quantity quantity) {
+            if (!isApplicable(quantity)) {
+                return Quantity.ZERO;
+            }
+            return new Quantity((quantity.value() / buyQuantity) * freeQuantity);
+        }
+    },
     MD_RECOMMENDED("MD추천상품", 1, 1,
             LocalDate.of(2024, 1, 1),
-            LocalDate.of(2024, 12, 31)),
+            LocalDate.of(2024, 12, 31)) {
+        @Override
+        public Quantity calculateFreeItems(Quantity quantity) {
+            if (!isApplicable(quantity)) {
+                return Quantity.ZERO;
+            }
+            return Quantity.ZERO;  // MD추천상품은 무료 상품 없음
+        }
+    },
     FLASH_SALE("반짝할인", 1, 1,
             LocalDate.of(2024, 11, 1),
-            LocalDate.of(2024, 11, 30));
+            LocalDate.of(2024, 11, 30)) {
+        @Override
+        public Quantity calculateFreeItems(Quantity quantity) {
+            if (!isApplicable(quantity)) {
+                return Quantity.ZERO;
+            }
+            return Quantity.ZERO;  // 반짝할인은 무료 상품 없음
+        }
+    };
 
     private final String name;
-    private final int buyQuantity;
-    private final int freeQuantity;
+    protected final int buyQuantity;
+    protected final int freeQuantity;
     private final LocalDate startDate;
     private final LocalDate endDate;
 
@@ -43,26 +67,16 @@ public enum PromotionType {
         return name;
     }
 
-
     private boolean isWithinPromotionPeriod() {
         LocalDateTime currentDateTime = DateTimes.now();
         LocalDate currentDate = currentDateTime.toLocalDate();
         return !currentDate.isBefore(startDate) && !currentDate.isAfter(endDate);
     }
+
     public boolean isApplicable(Quantity quantity) {
         return isWithinPromotionPeriod() &&
                 quantity.value() >= this.buyQuantity;
     }
 
-    public int calculateFreeItems(Quantity quantity) {
-        if (!isApplicable(quantity)) {
-            return 0;
-        }
-        if (this == MD_RECOMMENDED || this == FLASH_SALE) {
-            return quantity.value();
-        }
-        return (quantity.value() / this.buyQuantity) * this.freeQuantity;
-    }
-
-
+    public abstract Quantity calculateFreeItems(Quantity quantity);  // 추상 메서드로 변경
 }

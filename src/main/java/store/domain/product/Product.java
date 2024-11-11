@@ -1,5 +1,6 @@
 package store.domain.product;
 
+import store.domain.promotion.PromotionType;
 import store.domain.vo.Price;
 import store.domain.vo.Quantity;
 import store.domain.stock.Stocks;
@@ -51,5 +52,8 @@ public abstract class Product {
         return stocks;
     }
 
+    public abstract String promotionName();  // 추가된 추상 메서드
+
     public abstract boolean isPromotionProduct();
+    public abstract PromotionType getPromotionType();  // 추가된 추상 메서드
 }

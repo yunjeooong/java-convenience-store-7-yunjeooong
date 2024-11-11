@@ -1,33 +1,31 @@
 package store.domain.product;
 
 import store.domain.promotion.PromotionType;
-import store.domain.stock.Stocks;
 import store.domain.vo.Price;
 import store.domain.vo.Quantity;
+import store.domain.stock.Stocks;
 
 public class PromotionProduct extends Product {
     private final PromotionType promotionType;
 
-    public PromotionProduct(String name, Price price, Stocks stocks, PromotionType promotionType) {
+    private PromotionProduct(String name, Price price, Stocks stocks, PromotionType promotionType) {
         super(name, price, stocks);
         this.promotionType = promotionType;
     }
 
-    public static PromotionProduct create(String name, Price price,
-                                          Quantity regularQuantity,
-                                          Quantity promotionQuantity,
-                                          PromotionType promotionType) {
+    public static PromotionProduct create(String name, Price price, Quantity regularStock,
+                                          Quantity promotionStock, PromotionType promotionType) {
         return new PromotionProduct(
                 name,
                 price,
-                Stocks.of(regularQuantity, promotionQuantity),
+                Stocks.of(regularStock, promotionStock),
                 promotionType
         );
     }
 
     @Override
-    public void removeStock(Quantity quantity) {
-        stocks.removeStock(quantity, isPromotionProduct());
+    public String promotionName() {
+        return promotionType.getName();
     }
 
     @Override
@@ -35,19 +33,17 @@ public class PromotionProduct extends Product {
         return true;
     }
 
+    @Override
+    public PromotionType getPromotionType() {
+        return promotionType;
+    }
+
+    // 추가된 메서드들
     public boolean canApplyPromotion(Quantity quantity) {
-        return promotionType.isApplicable(quantity) &&
-                stocks.hasEnoughPromotionStock(quantity);
+        return promotionType.isApplicable(quantity);
     }
 
     public Quantity calculateFreeItems(Quantity quantity) {
-        if (!promotionType.isApplicable(quantity)) {
-            return Quantity.ZERO;
-        }
-        return new Quantity(promotionType.calculateFreeItems(quantity));
-    }
-
-    public String promotionName() {
-        return promotionType.getName();
+        return promotionType.calculateFreeItems(quantity);
     }
 }

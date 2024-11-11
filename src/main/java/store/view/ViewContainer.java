@@ -24,4 +24,7 @@ public class ViewContainer {
     public RetryTemplate getRetryTemplate() {
         return retryTemplate;
     }
+    public boolean readAdditionalPurchase() {
+        return inputView.readAdditionalPurchase();
+    }
 }

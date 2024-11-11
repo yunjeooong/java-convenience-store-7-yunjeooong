@@ -1,7 +1,6 @@
 package store.dto.response;
 
 import store.domain.product.Product;
-import store.domain.product.PromotionProduct;
 import store.domain.vo.Quantity;
 
 public record ProductResponseDto(
@@ -15,26 +14,23 @@ public record ProductResponseDto(
                 product.getName(),
                 product.getPrice().value(),
                 quantity.value(),
-                product.getName()
+                product.promotionName()
+
         );
     }
 
     public boolean hasPromotion() {
-        return !promotionName.isEmpty() && !promotionName.equals("null");
+        return promotionName != null && !promotionName.equals("null");
     }
 
     public String getStockDisplay() {
         if (stockStatus == 0) {
-            // 프로모션 상품과 일반 상품 구분
-            if (hasPromotion()) {
-                return String.format("%s %s", stockStatus + "개", promotionName);
-            }
             return "재고 없음";
         }
-        // 재고가 있는 경우
-        if (hasPromotion()) {
-            return String.format("%s %s", stockStatus + "개", promotionName);
-        }
         return stockStatus + "개";
+    }
+
+    public String getPromotionDisplay() {
+        return hasPromotion() ? promotionName : "";
     }
 }
