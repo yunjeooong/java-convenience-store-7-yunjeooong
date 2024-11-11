@@ -24,24 +24,38 @@ public class StockFileManager {
 
     public List<String> readCurrentProducts() {
         try {
-            if (isTestMode) {
-                return Files.readAllLines(Paths.get(INITIAL_PRODUCTS_FILE));
-            }
+            List<String> lines = readInitialProducts();
+            String header = lines.get(0);
+            List<String> sortedLines = sortProductLines(lines.subList(1, lines.size()));
 
-            Path currentPath = Paths.get(CURRENT_PRODUCTS_FILE);
-            if (Files.exists(currentPath)) {
-                return Files.readAllLines(currentPath);
-            }
-            return Files.readAllLines(Paths.get(INITIAL_PRODUCTS_FILE));
+            return createResultList(header, sortedLines);
         } catch (IOException e) {
             throw new IllegalStateException("[ERROR] 상품 정보를 불러올 수 없습니다.");
         }
+    }
+
+    private List<String> readInitialProducts() throws IOException {
+        return Files.readAllLines(Paths.get(INITIAL_PRODUCTS_FILE));
+    }
+
+    private List<String> sortProductLines(List<String> lines) {
+        return lines.stream()
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    private List<String> createResultList(String header, List<String> sortedLines) {
+        List<String> result = new ArrayList<>();
+        result.add(header);
+        result.addAll(sortedLines);
+        return result;
     }
 
     public void saveStockState(List<Product> products) {
         if (isTestMode) {
             return;
         }
+
         List<String> lines = new ArrayList<>();
         lines.add(PRODUCTS_HEADER);
         lines.addAll(convertToLines(products));
