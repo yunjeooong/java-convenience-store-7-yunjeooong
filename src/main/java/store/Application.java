@@ -7,11 +7,16 @@ import store.controller.OrderController;
 
 public class Application {
     public static void main(String[] args) {
-        AppConfig appConfig = AppConfig.getInstance();
+        AppConfig appConfig = new AppConfig(false);
         MainController mainController = appConfig.mainController();
         OrderController orderController = appConfig.orderController();
 
-        mainController.start();
-        orderController.processOrder();
-    }
+            try {
+                mainController.start();
+                orderController.processOrder();
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+        }
+
 }

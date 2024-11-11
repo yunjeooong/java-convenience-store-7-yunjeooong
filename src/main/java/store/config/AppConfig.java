@@ -3,23 +3,33 @@ package store.config;
 import store.controller.MainController;
 import store.controller.OrderController;
 import store.domain.discount.DiscountManager;
+import store.domain.discount.DiscountPolicy;
+import store.domain.discount.MembershipDiscountPolicy;
+import store.domain.discount.PromotionDiscountPolicy;
+import store.infrastructure.FileReader;
 import store.infrastructure.StockFileManager;
 import store.repository.ProductRepository;
 import store.service.OrderFacade;
 import store.service.OrderService;
 import store.service.ProductService;
 import store.service.ReceiptService;
-import store.infrastructure.FileReader;
 import store.view.InputView;
 import store.view.OutputView;
 import store.view.ViewContainer;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
 public class AppConfig {
-    private AppConfig() {}
+    private final boolean isTestMode;
 
+    // 테스트용 생성자
+    public AppConfig(boolean isTestMode) {
+        this.isTestMode = isTestMode;
+    }
+
+    // 실제 운영용 싱글톤 인스턴스
     private static class SingleTonHelper {
-        private static final AppConfig INSTANCE = new AppConfig();
+        private static final AppConfig INSTANCE = new AppConfig(false);
     }
 
     public static AppConfig getInstance() {
@@ -27,7 +37,7 @@ public class AppConfig {
     }
 
     public StockFileManager stockFileManager() {
-        return new StockFileManager();
+        return new StockFileManager(isTestMode);
     }
 
     public FileReader fileReader() {
@@ -54,24 +64,28 @@ public class AppConfig {
         return ProductService.create(productRepository());
     }
 
-    public MainController mainController() {
-        return new MainController(viewContainer(), productService());
-    }
-
     public OrderService orderService() {
         return new OrderService(productRepository());
     }
 
-    public ReceiptService receiptService() {
-        return new ReceiptService(outputView());
+    public DiscountManager discountManager() {
+        List<DiscountPolicy> policies = Arrays.asList(
+                new PromotionDiscountPolicy(),
+                new MembershipDiscountPolicy()
+        );
+        return DiscountManager.create(policies);
     }
 
     public OrderFacade orderFacade() {
         return new OrderFacade(
                 orderService(),
-                DiscountManager.create(Collections.emptyList()),
+                discountManager(),
                 productRepository()
         );
+    }
+
+    public ReceiptService receiptService() {
+        return new ReceiptService(outputView());
     }
 
     public OrderController orderController() {
@@ -81,5 +95,9 @@ public class AppConfig {
                 productService(),
                 receiptService()
         );
+    }
+
+    public MainController mainController() {
+        return new MainController(viewContainer(), productService());
     }
 }

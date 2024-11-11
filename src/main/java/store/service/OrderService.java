@@ -23,10 +23,8 @@ public class OrderService {
             Product product = findProduct(entry.getKey());
             order.addLineItem(product, entry.getValue());
         }
-
         order.removeStocks();
         productRepository.saveCurrentState();
-
         return order;
     }
 

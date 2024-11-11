@@ -19,7 +19,7 @@ import store.util.ProductInfoParser;
 import store.util.ProductInfoParser.ProductInfo;
 
 public class ProductRepository {
-    private final Products products;
+    private Products products;
     private final FileReader fileReader;
     private final StockFileManager stockFileManager;
 
@@ -76,6 +76,10 @@ public class ProductRepository {
     private void addNormalVersion(List<ProductInfo> infos, List<Product> allProducts) {
         ProductInfo regularInfo = findNormalInfoOrCreateEmpty(infos);
         allProducts.add(createNormalProduct(regularInfo));
+    }
+
+    public void refreshProducts() {
+        this.products = initializeProducts();
     }
 
     private ProductInfo findNormalInfoOrCreateEmpty(List<ProductInfo> infos) {

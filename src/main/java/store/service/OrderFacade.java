@@ -28,7 +28,6 @@ public class OrderFacade {
         Map<String, Quantity> items = convertToItemMap(orderRequests);
         Order order = orderService.createOrder(items, hasMembership);
         discountManager.applyDiscount(order);
-        productRepository.saveCurrentState();
         return OrderResponseDto.from(order);
     }
 
