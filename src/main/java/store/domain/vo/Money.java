@@ -36,9 +36,6 @@ public record Money(int value) {
         return new Money(this.value * multiplier);
     }
 
-    public Money divide(int divisor) {
-        return new Money(this.value / divisor);
-    }
 
     public String format() {
         return String.format("%,d", value);

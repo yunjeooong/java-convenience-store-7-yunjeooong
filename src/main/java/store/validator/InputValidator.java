@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import store.domain.vo.Quantity;
 
 public class InputValidator {
-    private static final String ITEM_REGEX = "\\[([^-]+-\\d+)\\]";
+    private static final String ITEM_REGEX = "\\[\\s*([^-]+)\\s*-\\s*(\\d+)\\s*\\]";
     private static final Pattern ITEM_PATTERN = Pattern.compile(ITEM_REGEX);
     private static final String YES = "Y";
     private static final String NO = "N";
@@ -21,7 +21,11 @@ public class InputValidator {
 
         Matcher matcher = ITEM_PATTERN.matcher(input);
         while (matcher.find()) {
-            items.add(parsePurchaseItem(matcher.group(1)));
+            String name = matcher.group(1).trim();
+            String quantityStr = matcher.group(2).trim();
+            Quantity quantity = validateQuantity(quantityStr);
+            validateName(name);
+            items.add(new PurchaseItem(name, quantity));
         }
 
         validateNotEmpty(items);
@@ -30,29 +34,13 @@ public class InputValidator {
 
     private static void validateInput(String input) {
         if (input == null || input.trim().isEmpty()) {
-            throw new IllegalArgumentException(ErrorMessages.EMPTY_INPUT.getMessage());
-        }
-    }
-
-    private static PurchaseItem parsePurchaseItem(String itemInfo) {
-        String[] parts = itemInfo.split("-");
-        validateParts(parts);
-
-        String name = validateName(parts[0].trim());
-        Quantity quantity = validateQuantity(parts[1].trim());
-
-        return new PurchaseItem(name, quantity);
-    }
-
-    private static void validateParts(String[] parts) {
-        if (parts.length != 2) {
-            throw new IllegalArgumentException(ErrorMessages.INVALID_ITEM_FORMAT.getMessage());
+            throw new IllegalArgumentException(ErrorMessages.INVALID_FORMAT.getMessage());
         }
     }
 
     private static String validateName(String name) {
         if (name.isEmpty()) {
-            throw new IllegalArgumentException(ErrorMessages.EMPTY_PRODUCT_NAME.getMessage());
+            throw new IllegalArgumentException(ErrorMessages.INVALID_FORMAT.getMessage());
         }
         return name;
     }
@@ -61,23 +49,23 @@ public class InputValidator {
         try {
             int quantity = Integer.parseInt(quantityStr);
             if (quantity <= 0) {
-                throw new IllegalArgumentException(ErrorMessages.INVALID_QUANTITY.getMessage());
+                throw new IllegalArgumentException(ErrorMessages.INVALID_FORMAT.getMessage());
             }
             return new Quantity(quantity);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(ErrorMessages.QUANTITY_NOT_NUMBER.getMessage());
+            throw new IllegalArgumentException(ErrorMessages.INVALID_FORMAT.getMessage());
         }
     }
 
     private static void validateNotEmpty(List<PurchaseItem> items) {
         if (items.isEmpty()) {
-            throw new IllegalArgumentException(ErrorMessages.EMPTY_ITEMS.getMessage());
+            throw new IllegalArgumentException(ErrorMessages.INVALID_FORMAT.getMessage());
         }
     }
 
     public static void validateYesNo(String input) {
         if (!YES.equals(input) && !NO.equals(input)) {
-            throw new IllegalArgumentException(ErrorMessages.INVALID_YES_NO_INPUT.getMessage());
+            throw new IllegalArgumentException(ErrorMessages.INVALID_INPUT.getMessage());
         }
     }
 
@@ -85,13 +73,10 @@ public class InputValidator {
     }
 
     public enum ErrorMessages {
-        EMPTY_INPUT("[ERROR] 입력이 비어있습니다. 다시 입력해 주세요."),
-        INVALID_ITEM_FORMAT("[ERROR] 상품 정보가 올바르지 않습니다. 다시 입력해주세요."),
-        EMPTY_PRODUCT_NAME("[ERROR] 상품명은 비어있을 수 없습니다. 다시 입력해주세요."),
-        INVALID_QUANTITY("[ERROR] 수량은 1개 이상이어야 합니다."),
-        QUANTITY_NOT_NUMBER("[ERROR] 수량은 숫자여야 합니다."),
-        EMPTY_ITEMS("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요."),
-        INVALID_YES_NO_INPUT(" [ERROR] 잘못된 입력입니다. 다시 입력해 주세요.");
+        INVALID_FORMAT("[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요."),
+        PRODUCT_NOT_FOUND("[ERROR] 존재하지 않는 상품입니다. 다시 입력해 주세요."),
+        INSUFFICIENT_STOCK("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요."),
+        INVALID_INPUT("[ERROR] 잘못된 입력입니다. 다시 입력해 주세요.");
 
         private final String message;
 
