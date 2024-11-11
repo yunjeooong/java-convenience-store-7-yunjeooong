@@ -1,13 +1,13 @@
 package store.view;
 
+import static store.validator.InputValidator.validateYesNo;
+
 import camp.nextstep.edu.missionutils.Console;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import store.domain.vo.Quantity;
 import store.dto.request.OrderRequestDto;
 import store.validator.InputValidator;
-import store.validator.InputValidator.PurchaseItem;
 
 public class InputView {
     private static final String PURCHASE_FORMAT_MESSAGE =
@@ -61,11 +61,6 @@ public class InputView {
         return "Y".equals(input);
     }
 
-    private void validateYesNo(String input) {
-        if (!input.equals("Y") && !input.equals("N")) {
-            throw new IllegalArgumentException("[ERROR] Y 또는 N으로 입력해주세요.");
-        }
-    }
 
     public boolean readInsufficientStockConfirmation(String productName,
                                                      int nonPromotionQuantity) {

@@ -11,6 +11,9 @@ import store.repository.ProductRepository;
 public class OrderService {
     private final ProductRepository productRepository;
 
+    private static final String ERROR_INSUFFICIENT_STOCK = "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.";
+    private static final String ERROR_PRODUCT_NOT_FOUND = "[ERROR] 존재하지 않는 상품입니다: %s";
+
     public OrderService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
@@ -23,7 +26,7 @@ public class OrderService {
             order.addLineItem(product, entry.getValue());
         }
         order.removeStocks();
-        updateProducts(order.getLineItems());  // 추가
+        updateProducts(order.getLineItems());
         return order;
     }
 
@@ -38,7 +41,7 @@ public class OrderService {
 
     private void validateStock(Product product, Quantity quantity) {
         if (!product.hasEnoughStock(quantity)) {
-            throw new IllegalArgumentException("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
+            throw new IllegalArgumentException(ERROR_INSUFFICIENT_STOCK);
         }
     }
 
@@ -55,7 +58,6 @@ public class OrderService {
     }
 
     private IllegalArgumentException createProductNotFoundException(String name) {
-        return new IllegalArgumentException(
-                String.format("[ERROR] 존재하지 않는 상품입니다: %s", name));
+        return new IllegalArgumentException(String.format(ERROR_PRODUCT_NOT_FOUND, name));
     }
 }
