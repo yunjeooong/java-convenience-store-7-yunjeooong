@@ -16,7 +16,19 @@ public class OrderLineItem {
     }
 
     public static OrderLineItem create(Product product, Quantity quantity) {
+        validateStock(product, quantity);
         return new OrderLineItem(product, quantity);
+    }
+
+    private static void validateStock(Product product, Quantity quantity) {
+        if (product instanceof PromotionProduct) {
+            Quantity totalQuantity = quantity.add(
+                    product.getPromotionType().calculateFreeItems(quantity)
+            );
+            product.validateStock(totalQuantity);
+        } else {
+            product.validateStock(quantity);
+        }
     }
 
     public void removeStock() {

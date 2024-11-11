@@ -37,12 +37,40 @@ public class OrderController {
     private void processSingleOrder() {
         viewContainer.getRetryTemplate().execute(() -> {
             List<OrderRequestDto> orderRequests = viewContainer.getInputView().readItems();
-            List<OrderRequestDto> finalRequests = processPromotionRequests(orderRequests);
-            boolean hasMembership = viewContainer.getInputView().readMembershipChoice();
-
-            OrderResponseDto orderResponse = orderFacade.processOrder(finalRequests, hasMembership);
-            receiptService.printReceipt(orderResponse);
+            validateOrderQuantities(orderRequests);
+            processValidOrder(orderRequests);
         });
+    }
+
+    private void processValidOrder(List<OrderRequestDto> orderRequests) {
+        List<OrderRequestDto> finalRequests = processPromotionRequests(orderRequests);
+        boolean hasMembership = viewContainer.getInputView().readMembershipChoice();
+        OrderResponseDto orderResponse = orderFacade.processOrder(finalRequests, hasMembership);
+        receiptService.printReceipt(orderResponse);
+    }
+
+    private void validateOrderQuantities(List<OrderRequestDto> orderRequests) {
+        orderRequests.forEach(this::validateSingleOrder);
+    }
+
+    private void validateSingleOrder(OrderRequestDto request) {
+        Product product = productService.findProduct(request.productName());
+        validateOrderQuantity(product, request.quantity());
+    }
+
+    private void validateOrderQuantity(Product product, Quantity quantity) {
+        product.validateStock(calculateTotalQuantity(product, quantity));
+    }
+
+    private Quantity calculateTotalQuantity(Product product, Quantity quantity) {
+        if (product.isPromotionProduct()) {
+            return calculatePromotionQuantity((PromotionProduct) product, quantity);
+        }
+        return quantity;
+    }
+
+    private Quantity calculatePromotionQuantity(PromotionProduct product, Quantity quantity) {
+        return quantity.add(product.getPromotionType().calculateFreeItems(quantity));
     }
 
     private List<OrderRequestDto> processPromotionRequests(List<OrderRequestDto> orderRequests) {
@@ -60,23 +88,21 @@ public class OrderController {
         if (!product.isPromotionProduct()) {
             return request;
         }
-        return handlePromotionProduct(product, request);
+        return handlePromotionProduct((PromotionProduct) product, request);
     }
 
-    private OrderRequestDto handlePromotionProduct(Product product, OrderRequestDto request) {
-        PromotionProduct promotionProduct = (PromotionProduct) product;
-        if (!canApplyPromotion(promotionProduct, request.quantity())) {
+    private OrderRequestDto handlePromotionProduct(PromotionProduct product, OrderRequestDto request) {
+        if (!canApplyPromotion(product, request.quantity())) {
             return request;
         }
-        return createPromotionOrderRequest(promotionProduct, request);
+        return createPromotionOrderRequest(product, request);
     }
 
     private boolean canApplyPromotion(PromotionProduct product, Quantity quantity) {
         return product.canApplyPromotion(quantity);
     }
 
-    private OrderRequestDto createPromotionOrderRequest(PromotionProduct product,
-                                                        OrderRequestDto request) {
+    private OrderRequestDto createPromotionOrderRequest(PromotionProduct product, OrderRequestDto request) {
         Quantity freeQuantity = calculateFreeItems(product, request.quantity());
         if (!shouldAddFreeItems(product.getName(), freeQuantity)) {
             return request;
@@ -88,17 +114,12 @@ public class OrderController {
         return new Quantity(product.calculateFreeItems(quantity).value());
     }
 
-
     private boolean shouldAddFreeItems(String productName, Quantity freeQuantity) {
         return viewContainer.getInputView().readPromotionSuggestion(productName, freeQuantity);
     }
 
-    private OrderRequestDto createRequestWithFreeItems(OrderRequestDto request,
-                                                       Quantity freeQuantity) {
-        return new OrderRequestDto(
-                request.productName(),
-                request.quantity().add(freeQuantity)
-        );
+    private OrderRequestDto createRequestWithFreeItems(OrderRequestDto request, Quantity freeQuantity) {
+        return new OrderRequestDto(request.productName(), request.quantity().add(freeQuantity));
     }
 
     private boolean checkAdditionalPurchase() {
@@ -108,6 +129,7 @@ public class OrderController {
         }
         return wantsToContinue;
     }
+
     public boolean wantsToContinueShopping() {
         return viewContainer.readAdditionalPurchase();
     }

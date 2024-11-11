@@ -90,8 +90,8 @@ public class InputValidator {
         EMPTY_PRODUCT_NAME("[ERROR] 상품명은 비어있을 수 없습니다. 다시 입력해주세요."),
         INVALID_QUANTITY("[ERROR] 수량은 1개 이상이어야 합니다."),
         QUANTITY_NOT_NUMBER("[ERROR] 수량은 숫자여야 합니다."),
-        EMPTY_ITEMS("[ERROR] 최소 1개 이상의 상품을 입력해주세요."),
-        INVALID_YES_NO_INPUT("[ERROR] Y 또는 N으로 입력해주세요. 다시 입력해 주세요.");
+        EMPTY_ITEMS("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요."),
+        INVALID_YES_NO_INPUT(" [ERROR] 잘못된 입력입니다. 다시 입력해 주세요.");
 
         private final String message;
 

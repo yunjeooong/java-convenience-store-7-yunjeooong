@@ -7,6 +7,7 @@ import store.domain.stock.Stocks;
 
 public abstract class Product {
     private static final String ERROR_NAME_REQUIRED = "[ERROR] 상품명은 필수입니다. 다시 입력하세요.";
+    private static final String ERROR_EXCEEDS_STOCK = "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.";
 
     private final String name;
     private final Price price;
@@ -22,6 +23,11 @@ public abstract class Product {
     private void validateName(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException(ERROR_NAME_REQUIRED);
+        }
+    }
+    public void validateStock(Quantity quantity) {
+        if (!hasEnoughStock(quantity)) {
+            throw new IllegalArgumentException(ERROR_EXCEEDS_STOCK);
         }
     }
 

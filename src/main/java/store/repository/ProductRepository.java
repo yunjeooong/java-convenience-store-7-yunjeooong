@@ -114,10 +114,6 @@ public class ProductRepository {
         return products.getAllProducts();
     }
 
-    public void refreshProducts() {
-        this.products = initializeProducts();
-    }
-
     public void updateProduct(Product product) {
         List<Product> updatedProducts = products.getAllProducts().stream()
                 .map(p -> shouldUpdate(p, product) ? product : p)

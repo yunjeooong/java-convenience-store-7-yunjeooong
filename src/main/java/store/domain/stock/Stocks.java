@@ -3,6 +3,8 @@ package store.domain.stock;
 import store.domain.vo.Quantity;
 
 public class Stocks {
+    private static final String ERROR_INSUFFICIENT_STOCK = "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.";
+
     private final RegularStock regularStock;
     private final PromotionStock promotionStock;
 
@@ -20,10 +22,28 @@ public class Stocks {
 
     public void removeStock(Quantity quantity, boolean isPromotion) {
         if (isPromotion) {
+            validatePromotionStock(quantity);
             removePromotionStock(quantity);
             return;
         }
+        validateRegularStock(quantity);
         removeRegularStock(quantity);
+    }
+
+    private void validatePromotionStock(Quantity quantity) {
+        Quantity availablePromotion = promotionStock.getQuantity();
+        Quantity availableRegular = regularStock.getQuantity();
+        Quantity totalAvailable = availablePromotion.add(availableRegular);
+
+        if (totalAvailable.isLessThan(quantity)) {
+            throw new IllegalArgumentException(ERROR_INSUFFICIENT_STOCK);
+        }
+    }
+
+    private void validateRegularStock(Quantity quantity) {
+        if (!regularStock.canFulfillOrder(quantity)) {
+            throw new IllegalArgumentException(ERROR_INSUFFICIENT_STOCK);
+        }
     }
 
     public void removePromotionStock(Quantity quantity) {
